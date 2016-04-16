@@ -3,33 +3,40 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:id="@+id/nav_alarm"
+            android:icon="@drawable/ic_menu_alarm"
+            android:title="Alarme" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:id="@+id/nav_mower"
+            android:icon="@drawable/ic_menu_mower"
+            android:title="Tondeuse" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:id="@+id/nav_dishwasher"
+            android:icon="@drawable/ic_menu_dishwasher"
+            android:title="Lave-vaisselle" />
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/nav_washing_machine"
+            android:icon="@drawable/ic_menu_washing_machine"
+            android:title="Machine à laver" />
+
+        <item
+            android:id="@+id/nav_dryer"
+            android:icon="@drawable/ic_menu_dryer"
+            android:title="Sèche linge" />
+
+        <item
+            android:id="@+id/nav_windows"
+            android:icon="@drawable/ic_menu_window"
+            android:title="Fenêtres" />
+
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Options">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_add_module"
+                android:icon="@drawable/ic_menu_add"
+                android:title="Ajouter un module" />
         </menu>
     </item>
 
