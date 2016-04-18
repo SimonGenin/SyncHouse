@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,6 +17,8 @@ import android.view.View;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,29 +81,42 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+
+        Fragment fragment = null;
+
         int id = item.getItemId();
 
         if (id == R.id.nav_alarm) {
-
+            fragment = AlarmFragment.newInstance();
         } else if (id == R.id.nav_mower) {
-
+            fragment = MowerFragment.newInstance();
         } else if (id == R.id.nav_dishwasher) {
-
+            fragment = DishWasherFragment.newInstance();
         } else if (id == R.id.nav_washing_machine) {
-
+            fragment = WashingMachineFragment.newInstance();
         } else if (id == R.id.nav_dryer) {
-
+            fragment = DryerFragment.newInstance();
         } else if (id == R.id.nav_windows) {
-
+            fragment = WindowsFragment.newInstance();
         } else if (id == R.id.nav_add_module) {
             // Not implemented
             FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
             Snackbar.make(fab, "Cette opération n'a pas été implémentée", Snackbar.LENGTH_SHORT).show();
         }
 
+        if (fragment != null) {
+            // Gestion du fragment
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.fragment_content, fragment).commit();
+        }
+
+        // Gestion de la fenetre
+        // item.setChecked(true);
+        setTitle(item.getTitle());
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }
