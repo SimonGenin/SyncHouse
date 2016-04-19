@@ -1,4 +1,4 @@
-package be.simongenin.synchouse;
+package be.simongenin.synchouse.fragments;
 
 
 import android.os.Bundle;
@@ -7,13 +7,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import be.simongenin.synchouse.R;
+
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link DryerFragment#newInstance} factory method to
+ * Use the {@link WashingMachineFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DryerFragment extends Fragment {
+public class WashingMachineFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -24,7 +26,7 @@ public class DryerFragment extends Fragment {
     private String mParam2;
 
 
-    public DryerFragment() {
+    public WashingMachineFragment() {
         // Required empty public constructor
     }
 
@@ -34,11 +36,11 @@ public class DryerFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment DryerFragment.
+     * @return A new instance of fragment WashingMachineFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static DryerFragment newInstance() {
-        DryerFragment fragment = new DryerFragment();
+    public static WashingMachineFragment newInstance() {
+        WashingMachineFragment fragment = new WashingMachineFragment();
         Bundle args = new Bundle();
         // args.putString(ARG_PARAM1, param1);
         // args.putString(ARG_PARAM2, param2);
@@ -59,7 +61,7 @@ public class DryerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_dryer, container, false);
+        return inflater.inflate(R.layout.fragment_washing_machine, container, false);
     }
 
 }

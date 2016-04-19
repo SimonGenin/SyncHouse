@@ -15,6 +15,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import be.simongenin.synchouse.fragments.AlarmFragment;
+import be.simongenin.synchouse.fragments.DishWasherFragment;
+import be.simongenin.synchouse.fragments.DryerFragment;
+import be.simongenin.synchouse.fragments.MowerFragment;
+import be.simongenin.synchouse.fragments.WashingMachineFragment;
+import be.simongenin.synchouse.fragments.WindowsFragment;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
