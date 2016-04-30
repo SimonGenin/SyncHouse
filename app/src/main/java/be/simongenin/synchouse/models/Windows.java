@@ -1,6 +1,6 @@
 package be.simongenin.synchouse.models;
 
-import be.simongenin.synchouse.exceptions.AlarmActivatedAlarmException;
+import be.simongenin.synchouse.exceptions.ActivatedTotalAlarmException;
 import be.simongenin.synchouse.exceptions.ShutterClosedException;
 import be.simongenin.synchouse.exceptions.WindowOpenedException;
 
@@ -29,16 +29,16 @@ public class Windows implements Alarm.AlarmStateListener{
      * Si volets pas ouvert, envoi une exception.
      *
      * @param s
-     * @throws AlarmActivatedAlarmException
+     * @throws ActivatedTotalAlarmException
      * @throws ShutterClosedException
      */
-    public void setWindowState(state s) throws AlarmActivatedAlarmException, ShutterClosedException {
+    public void setWindowState(state s) throws ActivatedTotalAlarmException, ShutterClosedException {
 
         // Ouvir
         if (s == state.OPEN) {
 
             // Si pas d'alarmes
-            if (alarmState == Alarm.state.NONE) {
+            if (alarmState == Alarm.state.NONE || alarmState == Alarm.state.PARTIAL) {
 
                 // Si volets ouvert
                 if (shutterState == state.OPEN) {
@@ -54,7 +54,7 @@ public class Windows implements Alarm.AlarmStateListener{
             }
             else {
 
-                throw new AlarmActivatedAlarmException();
+                throw new ActivatedTotalAlarmException();
 
             }
         }
@@ -80,20 +80,20 @@ public class Windows implements Alarm.AlarmStateListener{
      * Si l'alarm est activée, envoi une exception
      *
      * @param s
-     * @throws AlarmActivatedAlarmException
+     * @throws ActivatedTotalAlarmException
      * @throws WindowOpenedException
      */
-    public void setShutterState(state s) throws AlarmActivatedAlarmException, WindowOpenedException {
+    public void setShutterState(state s) throws ActivatedTotalAlarmException, WindowOpenedException {
 
         if (s == state.OPEN) {
 
-            if (alarmState == Alarm.state.NONE) {
+            if (alarmState == Alarm.state.NONE || alarmState == Alarm.state.PARTIAL) {
 
                 shutterState = state.OPEN;
 
             } else {
 
-                throw new AlarmActivatedAlarmException();
+                throw new ActivatedTotalAlarmException();
 
             }
 
@@ -123,12 +123,12 @@ public class Windows implements Alarm.AlarmStateListener{
         alarmState = s;
 
         // Si l'alarme est activée, on ferme tout
-        if (s != Alarm.state.NONE) {
+        if (s == Alarm.state.TOTAL) {
 
             try {
                 setWindowState(state.CLOSED);
                 setShutterState(state.CLOSED);
-            } catch (AlarmActivatedAlarmException | WindowOpenedException | ShutterClosedException e) {
+            } catch (ActivatedTotalAlarmException | WindowOpenedException | ShutterClosedException e) {
                 e.printStackTrace();
                 // Ne doit jamais arriver si les specs sont respectées
             }

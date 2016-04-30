@@ -1,12 +1,14 @@
 package be.simongenin.synchouse.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import be.simongenin.synchouse.MainActivity;
 import be.simongenin.synchouse.R;
 
 
@@ -28,6 +30,8 @@ public class MowerFragment extends Fragment {
 
     public MowerFragment() {
         // Required empty public constructor
+
+
     }
 
     /**
@@ -52,8 +56,8 @@ public class MowerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            // mParam1 = getArguments().getString(ARG_PARAM1);
+            // mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
