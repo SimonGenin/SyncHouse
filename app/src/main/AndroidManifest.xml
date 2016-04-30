@@ -41,7 +41,7 @@
 
         <!-- [START gcm_listener] -->
         <service
-            android:name=".gcm.MyGcmListenerService"
+            android:name=".gcm.SyncHouseGcmListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -50,7 +50,7 @@
         <!-- [END gcm_listener] -->
         <!-- [START instanceId_listener] -->
         <service
-            android:name=".gcm.MyInstanceIDListenerService"
+            android:name=".gcm.SyncHouseInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID"/>
