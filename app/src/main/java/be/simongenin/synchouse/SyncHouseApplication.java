@@ -4,12 +4,12 @@ import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+import be.simongenin.synchouse.models.ConnectedHouse;
 import be.simongenin.synchouse.requests.OkHttpStack;
 
 public class SyncHouseApplication extends Application {
@@ -18,6 +18,7 @@ public class SyncHouseApplication extends Application {
     public RequestQueue requestQueue;
     public boolean isUserConnected;
     public String homeID;
+    public ConnectedHouse house;
 
     private SharedPreferences preferences;
 
@@ -32,9 +33,8 @@ public class SyncHouseApplication extends Application {
         isUserConnected = preferences.getBoolean("is_user_connected", false);
         homeID = preferences.getString("home_id", "");
 
-        Log.i("SynchouseApplication", "Retrieve from prefs : " + isUserConnected);
-        Log.i("SynchouseApplication", "Retrieve from prefs : " + homeID);
-
+        house = new ConnectedHouse(this);
+        house.retrieveState();
     }
 
     public void disconnect(boolean criticalError) {
@@ -55,9 +55,7 @@ public class SyncHouseApplication extends Application {
 
         preferences.edit().putBoolean("is_user_connected", isUserConnected).commit();
         preferences.edit().putString("home_id", homeID).commit();
-
-        Log.i("SynchouseApplication", "Put into prefs : " + isUserConnected);
-        Log.i("SynchouseApplication", "Put into prefs : " + homeID);
+        house.saveState();
 
     }
 
@@ -65,9 +63,6 @@ public class SyncHouseApplication extends Application {
 
         isUserConnected = preferences.getBoolean("is_user_connected", false);
         homeID = preferences.getString("home_id", "");
-
-        Log.i("SynchouseApplication", "Retrieve from prefs : " + isUserConnected);
-        Log.i("SynchouseApplication", "Retrieve from prefs : " + homeID);
-
+        house.retrieveState();
     }
 }

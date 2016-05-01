@@ -1,137 +1,86 @@
 package be.simongenin.synchouse.models;
 
+import android.content.SharedPreferences;
+
 import be.simongenin.synchouse.exceptions.ActivatedTotalAlarmException;
-import be.simongenin.synchouse.exceptions.ShutterClosedException;
 import be.simongenin.synchouse.exceptions.WindowOpenedException;
 
-public class Windows implements Alarm.AlarmStateListener{
+public class Windows{
 
     public enum state { OPEN, CLOSED }
 
     private state windowState;
     private state shutterState;
-    private Alarm.state alarmState;
 
     public Windows() {
 
         windowState = state.CLOSED;
         shutterState = state.CLOSED;
-        alarmState = Alarm.state.NONE;
 
     }
 
-    /**
-     *
-     * ouvre ou fermer les fenetres
-     *
-     * Pour ouvrir :
-     * Si l'alarme est activée, envoi une excpetion.
-     * Si volets pas ouvert, envoi une exception.
-     *
-     * @param s
-     * @throws ActivatedTotalAlarmException
-     * @throws ShutterClosedException
-     */
-    public void setWindowState(state s) throws ActivatedTotalAlarmException, ShutterClosedException {
-
-        // Ouvir
-        if (s == state.OPEN) {
-
-            // Si pas d'alarmes
-            if (alarmState == Alarm.state.NONE || alarmState == Alarm.state.PARTIAL) {
-
-                // Si volets ouvert
-                if (shutterState == state.OPEN) {
-
-                    windowState = state.OPEN;
-
-                } else {
-
-                    throw new ShutterClosedException();
-
-                }
-
-            }
-            else {
-
-                throw new ActivatedTotalAlarmException();
-
-            }
-        }
-
-        // Fermer
-        if (s == state.CLOSED) {
-
-            windowState = state.CLOSED;
-
-        }
-
+    public void setWindowState(state s) {
+        windowState = s;
 
     }
 
-    /**
-     *
-     * Permet d'ouvrir et fermer les volets
-     *
-     * Pour femer :
-     * si les fenetres sont ouvertes, envoi un exception
-     *
-     * Pour ourvir :
-     * Si l'alarm est activée, envoi une exception
-     *
-     * @param s
-     * @throws ActivatedTotalAlarmException
-     * @throws WindowOpenedException
-     */
     public void setShutterState(state s) throws ActivatedTotalAlarmException, WindowOpenedException {
+        shutterState = s;
+    }
 
-        if (s == state.OPEN) {
+    public void saveState(SharedPreferences preferences) {
 
-            if (alarmState == Alarm.state.NONE || alarmState == Alarm.state.PARTIAL) {
+        int windowsState = 1;
+        int shuttersState = 1;
 
-                shutterState = state.OPEN;
+        switch (windowState) {
 
-            } else {
-
-                throw new ActivatedTotalAlarmException();
-
-            }
-
+            case OPEN:
+                windowsState = 2;
+                break;
+            case CLOSED:
+                windowsState = 1;
+                break;
         }
 
-        if (s == state.CLOSED) {
+        switch (shutterState) {
 
-            if (windowState == state.OPEN) {
-
-                throw new WindowOpenedException();
-
-            }
-
-            else {
-
-                shutterState = state.CLOSED;
-
-            }
-
+            case OPEN:
+                shuttersState = 2;
+                break;
+            case CLOSED:
+                shuttersState = 1;
+                break;
         }
+
+        preferences.edit().putInt("window_state", windowsState).apply();
+        preferences.edit().putInt("shutter_state", shuttersState).apply();
 
     }
 
-    @Override
-    public void alarmSateChanged(Alarm.state s) {
+    public void retrieveState(SharedPreferences preferences) {
 
-        alarmState = s;
+        int windowsState = preferences.getInt("window_state", 1);
+        int shuttersState = preferences.getInt("shutter_state", 1);
 
-        // Si l'alarme est activée, on ferme tout
-        if (s == Alarm.state.TOTAL) {
+        switch (windowsState) {
 
-            try {
-                setWindowState(state.CLOSED);
-                setShutterState(state.CLOSED);
-            } catch (ActivatedTotalAlarmException | WindowOpenedException | ShutterClosedException e) {
-                e.printStackTrace();
-                // Ne doit jamais arriver si les specs sont respectées
-            }
+            case 1:
+                windowState = state.CLOSED;
+                break;
+            case 2:
+                windowState = state.OPEN;
+                break;
+        }
+
+        switch (shuttersState) {
+
+            case 1:
+                shutterState = state.CLOSED;
+                break;
+            case 2:
+                shutterState = state.OPEN;
+                break;
         }
 
     }

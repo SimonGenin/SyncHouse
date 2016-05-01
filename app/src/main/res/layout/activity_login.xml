@@ -37,8 +37,22 @@
                 android:textColor="@color/colorPrimary"
                 android:textAlignment="center"
                 android:textSize="24sp"
-                android:layout_margin="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_marginBottom="16dp"
                 android:textStyle="bold"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Your house, under control."
+                android:textColor="@color/colorPrimary"
+                android:textAlignment="center"
+                android:textSize="16sp"
+                android:textStyle="italic"
+                android:layout_marginBottom="16dp"
                 />
 
 
@@ -54,7 +68,7 @@
                     android:inputType="text"
                     android:maxLines="1"
                     android:singleLine="true"
-                    />
+                    android:fontFamily="roboto" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -68,7 +82,7 @@
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Password"
+                    android:hint="Mot de passe"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified"
@@ -76,7 +90,7 @@
                     android:maxLines="1"
                     android:singleLine="true"
 
-                    />
+                    android:fontFamily="roboto" />
 
             </android.support.design.widget.TextInputLayout>
 

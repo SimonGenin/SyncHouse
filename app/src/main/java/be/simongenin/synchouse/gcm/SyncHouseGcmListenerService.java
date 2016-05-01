@@ -76,7 +76,9 @@ public class SyncHouseGcmListenerService extends GcmListenerService {
 
     private void applyStatusCode(int statusCode) {
 
-
+        /**
+         * TODO do this shit
+         */
 
     }
 

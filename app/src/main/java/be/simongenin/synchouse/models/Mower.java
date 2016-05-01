@@ -1,22 +1,12 @@
 package be.simongenin.synchouse.models;
 
-import java.util.Calendar;
-
-import be.simongenin.synchouse.exceptions.ForbiddenHoursException;
+import android.content.SharedPreferences;
 
 public class Mower {
 
-    private int forbiddenHourMorning = 8 * 60;
-    private int forbiddenHourEvening = 22 * 60;
-
-    private boolean hasBeenInterrupted;
-    private int leftFromLastWork;
-
-    private boolean isWorking;
-    private int timeToWork;
-    private int startTime;
-
     private int sizeGrass;
+    private boolean isWorking;
+
 
     public Mower() {
 
@@ -24,33 +14,13 @@ public class Mower {
 
     }
 
-    public void start() {
-        start(4 * 60);
-    }
-
     /**
      * Start if mower finished properly it's 4h
      * check if can start first, runtime exception
      */
-    public void start(int time) {
+    public void start() {
 
-        int hourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        int minutesOfHour = Calendar.getInstance().get(Calendar.MINUTE);
-
-        startTime = hourOfDay * 60 + minutesOfHour;
-
-        if (startTime < forbiddenHourMorning || startTime >= forbiddenHourEvening) {
-
-            throw new ForbiddenHoursException();
-
-        }
-
-        else {
-
-            isWorking = true;
-            timeToWork = time;
-
-        }
+       isWorking = true;
 
     }
 
@@ -61,44 +31,7 @@ public class Mower {
     public void stop() {
 
         isWorking = false;
-        hasBeenInterrupted = false;
-        leftFromLastWork = 0;
 
-    }
-
-    /**
-     * Pospose simplement la fin de la tonte a la prochaine reprise
-     */
-    public void interrupt() {
-
-        hasBeenInterrupted = true;
-
-        int hourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        int minutesOfHour = Calendar.getInstance().get(Calendar.MINUTE);
-        int interruptionTime = hourOfDay * 60 + minutesOfHour;
-
-        leftFromLastWork = timeToWork - (startTime - interruptionTime);
-
-        isWorking = false;
-
-    }
-
-    /**
-     * Redemarre la tondeuse pour le bon nombre de temps
-     */
-    public void restart() {
-
-        if (!hasBeenInterrupted) start();
-        start(leftFromLastWork);
-
-    }
-
-    public boolean hasBeenInterrupted() {
-        return hasBeenInterrupted;
-    }
-
-    public boolean isWorking() {
-        return isWorking;
     }
 
     public int getSizeGrass() {
@@ -107,6 +40,28 @@ public class Mower {
 
     public void setSizeGrass(int sizeGrass) {
         this.sizeGrass = sizeGrass;
+    }
+
+    public boolean isWorking() {
+        return isWorking;
+    }
+
+    public void setWorking(boolean working) {
+        isWorking = working;
+    }
+
+    public void saveState(SharedPreferences preferences) {
+
+        preferences.edit().putBoolean("mower_is_working", isWorking).apply();
+        preferences.edit().putInt("size_grass", sizeGrass).apply();
+
+    }
+
+    public void retrieveState(SharedPreferences preferences) {
+
+        isWorking = preferences.getBoolean("mower_is_working", false);
+        sizeGrass = preferences.getInt("size_grass", 1);
+
     }
 
 }

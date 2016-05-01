@@ -9,11 +9,35 @@ public class Alarm {
     private state currentState;
     private boolean isAlarmSoundActive;
 
-    private AlarmStateListener alarmStateBroadcaster;
+
+    public Alarm() {
+
+        currentState = state.NONE;
+        isAlarmSoundActive = false;
+
+    }
+
+    public void turnOffAlarmSound() {
+
+        isAlarmSoundActive = false;
+        currentState = state.NONE;
+
+    }
+
+    public void setState(state s) {
+
+        currentState = s;
+    }
+
+    private state getState() {
+        return currentState;
+    }
+
+    public boolean isAlarmSoundActive() {
+        return isAlarmSoundActive;
+    }
 
     public void saveState(SharedPreferences preferences) {
-
-        preferences.edit().putBoolean("is_alarm_active", isAlarmSoundActive);
 
         int state = 1;
         switch (currentState) {
@@ -29,7 +53,8 @@ public class Alarm {
                 break;
         }
 
-        preferences.edit().putInt("current_state", state);
+        preferences.edit().putBoolean("is_alarm_active", isAlarmSoundActive).apply();
+        preferences.edit().putInt("current_state", state).apply();
 
     }
 
@@ -51,49 +76,6 @@ public class Alarm {
                 break;
 
         }
-
-    }
-
-    public Alarm() {
-
-        currentState = state.NONE;
-        broadcastStateChanged(state.NONE);
-        isAlarmSoundActive = false;
-
-    }
-
-    public void turnOffAlarmSound() {
-
-        isAlarmSoundActive = false;
-        currentState = state.NONE;
-        broadcastStateChanged(state.NONE);
-
-    }
-
-    public void setState(state s) {
-
-        currentState = s;
-        broadcastStateChanged(s);
-
-    }
-
-    private state getState() {
-        return currentState;
-    }
-
-    public boolean isAlarmSoundActive() {
-        return isAlarmSoundActive;
-    }
-
-    private void broadcastStateChanged(state s) {
-        if ( alarmStateBroadcaster != null ) {
-            alarmStateBroadcaster.alarmSateChanged(s);
-        }
-    }
-
-    public interface AlarmStateListener {
-
-        void alarmSateChanged(Alarm.state s);
 
     }
 

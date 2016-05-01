@@ -1,46 +1,17 @@
 package be.simongenin.synchouse.models;
 
 
-import java.util.Calendar;
-
-import be.simongenin.synchouse.exceptions.ForbiddenHoursException;
+import android.content.SharedPreferences;
 
 public class DomesticMachine {
 
-    private boolean isPromoDay;
-
-    public enum problem { ELECTRICITY, WATER, ELECTRICITY_AND_WATER , NONE };
-
-    protected problem currentProblem;
-
-    protected final int allowedStartHour = 22 * 60;
-    protected final int allowedEndHour = 6 * 60;
+    public enum Type { DRYER, WASHING_MACHINE, DISH_WASHER }
 
     protected boolean isWorking;
-    protected int startTime;
-
-    public DomesticMachine() {
-
-        currentProblem =  problem.NONE;
-
-    }
 
     public void start() {
 
-        int hourOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        int minutesOfHour = Calendar.getInstance().get(Calendar.MINUTE);
-
-        startTime = hourOfDay * 60 + minutesOfHour;
-
-        if ( startTime >= allowedStartHour || startTime < allowedEndHour || isPromoDay ) {
-
-            isWorking = true;
-
-        } else {
-
-            throw new ForbiddenHoursException();
-
-        }
+        isWorking = true;
 
     }
 
@@ -50,5 +21,38 @@ public class DomesticMachine {
 
     }
 
+    public void saveState(Type type, SharedPreferences preferences) {
+
+        switch (type) {
+
+            case DRYER:
+                preferences.edit().putBoolean("dryer_is_working", isWorking).apply();
+                break;
+            case WASHING_MACHINE:
+                preferences.edit().putBoolean("wm_is_working", isWorking).apply();
+                break;
+            case DISH_WASHER:
+                preferences.edit().putBoolean("dw_is_working", isWorking).apply();
+                break;
+        }
+
+    }
+
+    public void retrieveState(Type type, SharedPreferences preferences) {
+
+        switch (type) {
+
+            case DRYER:
+                isWorking = preferences.getBoolean("dryer_is_working", false);
+                break;
+            case WASHING_MACHINE:
+                isWorking = preferences.getBoolean("wm_is_working", false);
+                break;
+            case DISH_WASHER:
+                isWorking = preferences.getBoolean("dw_is_working", false);
+                break;
+        }
+
+    }
 
 }
