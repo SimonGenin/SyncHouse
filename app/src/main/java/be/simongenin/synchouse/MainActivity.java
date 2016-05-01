@@ -69,14 +69,26 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         /**
-         * Set the XML layout
-         */
-        setContentView(R.layout.activity_main);
-
-        /**
          * Get the instance of the application (it contains the request queue)
          */
         application = (SyncHouseApplication) getApplication();
+
+        // TODO remove (testing)
+        application.isUserConnected = true;
+
+
+        /**
+         * If no one is connected, launhc the login activity.
+         */
+        if (!application.isUserConnected) {
+            Intent loginIntent = new Intent(this,LoginActivity.class);
+            startActivity(loginIntent);
+        }
+
+        /**
+         * Set the XML layout
+         */
+        setContentView(R.layout.activity_main);
 
         /**
          * Get the request queue
@@ -174,7 +186,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_disconnect) {
-            return true;
+            application.disconnect();
         }
 
         return super.onOptionsItemSelected(item);
