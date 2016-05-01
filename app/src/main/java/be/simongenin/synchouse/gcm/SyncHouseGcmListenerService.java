@@ -24,16 +24,18 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
 import be.simongenin.synchouse.MainActivity;
+import be.simongenin.synchouse.R;
+import be.simongenin.synchouse.SyncHouseApplication;
 
 
 public class SyncHouseGcmListenerService extends GcmListenerService {
 
     private static final String TAG = "SHGcmListenerService";
+
 
     /**
      * Called when message is received.
@@ -42,35 +44,41 @@ public class SyncHouseGcmListenerService extends GcmListenerService {
      * @param data Data bundle containing message data as key/value pairs.
      *             For Set of keys use data.keySet().
      */
-    // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
-        String message = data.getString("message");
-        Log.d(TAG, "From: " + from);
-        Log.d(TAG, "Message: " + message);
 
-        if (from.startsWith("/topics/")) {
-            // message received from some topic.
-        } else {
-            // normal downstream message.
+        SyncHouseApplication application = (SyncHouseApplication) getApplication();
+
+        int statusCode = data.getInt("status_code");
+        String homeId = data.getString("home_id");
+        String message = data.getString("message");
+
+        /**
+         * We first need to be sure that we are concerned by the message.
+         */
+        if (!application.homeID.equals(homeId)) {
+            return;
         }
 
-        // [START_EXCLUDE]
         /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         *     - Store message in local database.
-         *     - Update UI.
+         * We need to do something depending on the status code.
          */
+        applyStatusCode(statusCode);
 
         /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
+         * Send a notification to the device
          */
-        // sendNotification(message);
-        // [END_EXCLUDE]
+        sendNotification(message);
+
+
     }
-    // [END receive_message]
+
+
+    private void applyStatusCode(int statusCode) {
+
+
+
+    }
 
     /**
      * Create and show a simple notification containing the received GCM message.
@@ -85,7 +93,7 @@ public class SyncHouseGcmListenerService extends GcmListenerService {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-//                .setSmallIcon(R.drawable.???)
+                .setSmallIcon(R.drawable.ic_menu_alarm)
                 .setContentTitle("GCM Message")
                 .setContentText(message)
                 .setAutoCancel(true)

@@ -4,9 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -73,10 +71,6 @@ public class MainActivity extends AppCompatActivity
          */
         application = (SyncHouseApplication) getApplication();
 
-        // TODO remove (testing)
-        application.isUserConnected = true;
-
-
         /**
          * If no one is connected, launhc the login activity.
          */
@@ -101,10 +95,11 @@ public class MainActivity extends AppCompatActivity
         registrationBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(context);
-                boolean sentToken = sharedPreferences
-                        .getBoolean(GCMPreferences.SENT_TOKEN_TO_SERVER, false);
+
+                /**
+                 * TODO remove if useless
+                 */
+
             }
         };
 
@@ -142,6 +137,7 @@ public class MainActivity extends AppCompatActivity
         /**
          * If the app just got resumed, let's register again the receiver
          */
+        application.retrieveState();
         LocalBroadcastManager.getInstance(this).registerReceiver(registrationBroadcastReceiver,
                 new IntentFilter(GCMPreferences.REGISTRATION_COMPLETE));
     }
@@ -151,6 +147,7 @@ public class MainActivity extends AppCompatActivity
         /**
          * If the app is in the pause state, let's unregister the receiver.
          */
+        application.persistState();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(registrationBroadcastReceiver);
         super.onPause();
     }
@@ -186,7 +183,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_disconnect) {
-            application.disconnect();
+            application.disconnect(false);
         }
 
         return super.onOptionsItemSelected(item);
@@ -276,6 +273,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
     /**
      * AUTHOR : GOOGLE
      *
@@ -298,5 +296,6 @@ public class MainActivity extends AppCompatActivity
         }
         return true;
     }
+
 
 }

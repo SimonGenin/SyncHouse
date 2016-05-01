@@ -17,6 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
@@ -190,6 +192,7 @@ public class LoginActivity extends AppCompatActivity {
          */
         private boolean isHomeIDRight = false;
         private boolean isPasswordRight = false;
+        private boolean isFinished = false;
 
         UserLoginTask(String homeID, String password) {
             this.homeID = homeID;
@@ -216,7 +219,7 @@ public class LoginActivity extends AppCompatActivity {
                          */
 
                         JSONObject jsonResponse = new JSONObject(response);
-                        isHomeIDRight = jsonResponse.getBoolean("home_Id");
+                        isHomeIDRight = jsonResponse.getBoolean("home_id");
                         isPasswordRight = jsonResponse.getBoolean("password");
 
                     } catch (JSONException e) {
@@ -255,6 +258,33 @@ public class LoginActivity extends AppCompatActivity {
             application.requestQueue.add(loginRequest);
 
             /**
+             * When it is finished, let set our isFinished flag to true
+             */
+            application.requestQueue.addRequestFinishedListener(new RequestQueue.RequestFinishedListener<String>() {
+
+                @Override
+                public void onRequestFinished(Request<String> request) {
+
+                    isFinished = true;
+
+                }
+
+            });
+
+            /**
+             * Wait util it is finished
+             */
+            while (!isFinished) {
+
+                try {
+                    Thread.sleep(200, 0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            /**
              * Value for the success variable in "OnPostExecute"
              */
             return isHomeIDRight && isPasswordRight;
@@ -268,6 +298,8 @@ public class LoginActivity extends AppCompatActivity {
 
             if (success) {
                 application.isUserConnected = true;
+                application.homeID = homeID;
+                application.persistState();
                 finish();
             } else {
 
@@ -291,4 +323,5 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 }
+
 

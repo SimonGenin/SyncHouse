@@ -40,7 +40,6 @@ import be.simongenin.synchouse.utils.ServerUtils;
 public class RegistrationIntentService extends IntentService {
 
     private static final String TAG = "RegIntentService";
-    private static final String[] TOPICS = {"global"};
 
     public RegistrationIntentService() {
         super(TAG);
@@ -132,7 +131,8 @@ public class RegistrationIntentService extends IntentService {
                  * To prevent any major issue, we disconnect this user.
                  */
 
-                application.disconnect();
+                Log.e(TAG, error.toString());
+                application.disconnect(true);
 
             }
 
