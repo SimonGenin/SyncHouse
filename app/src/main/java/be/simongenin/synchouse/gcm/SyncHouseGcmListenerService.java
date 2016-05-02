@@ -34,6 +34,8 @@ import be.simongenin.synchouse.SyncHouseApplication;
 
 public class SyncHouseGcmListenerService extends GcmListenerService {
 
+    private static int count = 0;
+
     private static final String TAG = "SHGcmListenerService";
 
 
@@ -79,7 +81,6 @@ public class SyncHouseGcmListenerService extends GcmListenerService {
         /**
          * TODO do this shit
          */
-
     }
 
     /**
@@ -93,10 +94,15 @@ public class SyncHouseGcmListenerService extends GcmListenerService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
+        /**
+         * TODO make autocancel different with the cases
+         * also, don't send to the main activity.
+         */
+
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_menu_alarm)
-                .setContentTitle("GCM Message")
+                .setContentTitle("SyncHouse")
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
@@ -105,6 +111,6 @@ public class SyncHouseGcmListenerService extends GcmListenerService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(count++, notificationBuilder.build());
     }
 }
