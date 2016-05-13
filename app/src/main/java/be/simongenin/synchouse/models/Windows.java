@@ -2,9 +2,6 @@ package be.simongenin.synchouse.models;
 
 import android.content.SharedPreferences;
 
-import be.simongenin.synchouse.exceptions.ActivatedTotalAlarmException;
-import be.simongenin.synchouse.exceptions.WindowOpenedException;
-
 public class Windows{
 
     public enum state { OPEN, CLOSED }
@@ -24,7 +21,7 @@ public class Windows{
 
     }
 
-    public void setShutterState(state s) throws ActivatedTotalAlarmException, WindowOpenedException {
+    public void setShutterState(state s) {
         shutterState = s;
     }
 
