@@ -16,25 +16,25 @@ package be.simongenin.synchouse.gcm;
  * limitations under the License.
  */
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import android.preference.PreferenceManager;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
 import be.simongenin.synchouse.MainActivity;
-import be.simongenin.synchouse.R;
 import be.simongenin.synchouse.SyncHouseApplication;
+import be.simongenin.synchouse.models.Alarm;
+import be.simongenin.synchouse.utils.NotificationHandler;
+
+import static be.simongenin.synchouse.requests.StatusCodes.ALARM_PARTIAL_START;
+import static be.simongenin.synchouse.requests.StatusCodes.ALARM_PROBLEM;
+import static be.simongenin.synchouse.requests.StatusCodes.ALARM_RING_START;
+import static be.simongenin.synchouse.requests.StatusCodes.ALARM_RING_STOP;
+import static be.simongenin.synchouse.requests.StatusCodes.ALARM_STOP;
+import static be.simongenin.synchouse.requests.StatusCodes.ALARM_TOTAL_START;
 
 
 public class SyncHouseGcmListenerService extends GcmListenerService {
-
-    private static int count = 0;
 
     private static final String TAG = "SHGcmListenerService";
 
@@ -51,7 +51,7 @@ public class SyncHouseGcmListenerService extends GcmListenerService {
 
         SyncHouseApplication application = (SyncHouseApplication) getApplication();
 
-        int statusCode = data.getInt("status_code");
+        int statusCode = Integer.parseInt(data.getString("status_code"));
         String homeId = data.getString("home_id");
         String message = data.getString("message");
 
@@ -70,47 +70,46 @@ public class SyncHouseGcmListenerService extends GcmListenerService {
         /**
          * Send a notification to the device
          */
-        sendNotification(message);
-
+        NotificationHandler.sendNotification(message, this, MainActivity.class);
 
     }
 
 
     private void applyStatusCode(int statusCode) {
 
-        /**
-         * TODO do this shit
-         */
+        Alarm alarm = new Alarm();
+        alarm.retrieveState(PreferenceManager.getDefaultSharedPreferences(this));
+
+        switch (statusCode) {
+
+            case ALARM_TOTAL_START:
+                alarm.setState(Alarm.state.TOTAL);
+                break;
+
+            case ALARM_PARTIAL_START :
+                alarm.setState(Alarm.state.PARTIAL);
+                break;
+
+            case ALARM_STOP:
+                alarm.setState(Alarm.state.NONE);
+                break;
+
+            case ALARM_RING_START:
+                alarm.activeSiren();
+                break;
+
+            case ALARM_RING_STOP:
+                alarm.deactivateSiren();
+                break;
+
+            case ALARM_PROBLEM:
+                // TODO problem
+                break;
+
+        }
+
+        alarm.saveState(PreferenceManager.getDefaultSharedPreferences(this));
+
     }
 
-    /**
-     * Create and show a simple notification containing the received GCM message.
-     *
-     * @param message GCM message received.
-     */
-    private void sendNotification(String message) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
-
-        /**
-         * TODO make autocancel different with the cases
-         * also, don't send to the main activity.
-         */
-
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_menu_alarm)
-                .setContentTitle("SyncHouse")
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
-
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.notify(count++, notificationBuilder.build());
-    }
 }

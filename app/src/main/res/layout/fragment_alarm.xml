@@ -16,7 +16,7 @@
             android:padding="16dp"
             >
 
-            <android.support.v7.widget.AppCompatRadioButton
+            <CheckBox
                 android:id="@+id/radio_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
             android:padding="16dp"
             >
 
-            <android.support.v7.widget.AppCompatRadioButton
+            <CheckBox
                 android:id="@+id/radio_partial"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -106,8 +106,8 @@
 
 </LinearLayout>
 
-
     <TextView
+        android:id="@+id/intrusion_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Une intrusion à été détectée !"
@@ -121,7 +121,7 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:text="Arreter la sirene"
-        android:id="@+id/button"
+        android:id="@+id/intrusion_button"
         android:layout_gravity="center_horizontal"
         android:enabled="false"
         android:layout_marginTop="8dp"

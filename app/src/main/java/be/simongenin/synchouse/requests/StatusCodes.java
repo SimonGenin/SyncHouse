@@ -33,25 +33,28 @@ public final class StatusCodes {
     /**
      * Dryer
      */
-    public final static int DRYER_START = 40;
-    public final static int DRYER_STOP = 41;
-    public final static int DRYER_WATER_PROBLEM = 42;
-    public final static int DRYER_ELECTRICAL_PROBLEM = 43;
+    public final static int DRYER_PROGRAM = 40;
+    public final static int DRYER_START = 41;
+    public final static int DRYER_STOP = 42;
+    public final static int DRYER_WATER_PROBLEM = 43;
+    public final static int DRYER_ELECTRICAL_PROBLEM = 44;
 
     /**
      * Washing machine
      */
-    public final static int WASHING_MACHINE_START = 50;
-    public final static int WASHING_MACHINE_STOP = 51;
-    public final static int WASHING_MACHINE_WATER_PROBLEM = 52;
-    public final static int WASHING_MACHINE_ELECTRICAL_PROBLEM = 53;
+    public final static int WASHING_MACHINE_PROGRAM = 50;
+    public final static int WASHING_MACHINE_START = 51;
+    public final static int WASHING_MACHINE_STOP = 52;
+    public final static int WASHING_MACHINE_WATER_PROBLEM = 53;
+    public final static int WASHING_MACHINE_ELECTRICAL_PROBLEM = 54;
 
     /**
      * Dish washer
      */
-    public final static int DISH_WASHER_START = 60;
-    public final static int DISH_WASHER_STOP = 61;
-    public final static int DISH_WASHER_WATER_PROBLEM = 62;
-    public final static int DISH_WASHER_ELECTRICAL_PROBLEM = 63;
+    public final static int DISH_WASHER_PROGRAM = 60;
+    public final static int DISH_WASHER_START = 61;
+    public final static int DISH_WASHER_STOP = 62;
+    public final static int DISH_WASHER_WATER_PROBLEM = 63;
+    public final static int DISH_WASHER_ELECTRICAL_PROBLEM = 64;
 
 }

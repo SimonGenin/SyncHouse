@@ -4,22 +4,27 @@ import android.content.SharedPreferences;
 
 public class Alarm {
 
+
     public enum state { PARTIAL, TOTAL, NONE }
 
     private state currentState;
-    private boolean isAlarmSoundActive;
+    private boolean isSirenActive;
 
 
     public Alarm() {
 
         currentState = state.NONE;
-        isAlarmSoundActive = false;
+        isSirenActive = false;
 
+    }
+
+    public state getCurrentState() {
+        return currentState;
     }
 
     public void turnOffAlarmSound() {
 
-        isAlarmSoundActive = false;
+        isSirenActive = false;
         currentState = state.NONE;
 
     }
@@ -29,13 +34,17 @@ public class Alarm {
         currentState = s;
     }
 
-    private state getState() {
-        return currentState;
+
+    public boolean isSirenActive() {
+        return isSirenActive;
+    }
+    public void activeSiren() {
+        isSirenActive = true;
+    }
+    public void deactivateSiren() {
+        isSirenActive = false;
     }
 
-    public boolean isAlarmSoundActive() {
-        return isAlarmSoundActive;
-    }
 
     public void saveState(SharedPreferences preferences) {
 
@@ -53,14 +62,14 @@ public class Alarm {
                 break;
         }
 
-        preferences.edit().putBoolean("is_alarm_active", isAlarmSoundActive).apply();
-        preferences.edit().putInt("current_state", state).apply();
+        preferences.edit().putBoolean("is_alarm_active", isSirenActive).commit();
+        preferences.edit().putInt("current_state", state).commit();
 
     }
 
     public void retrieveState(SharedPreferences preferences) {
 
-        isAlarmSoundActive = preferences.getBoolean("is_alarm_active", false);
+        isSirenActive = preferences.getBoolean("is_alarm_active", false);
         int state = preferences.getInt("current_state", 1);
 
         switch (state) {

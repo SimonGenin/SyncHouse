@@ -8,7 +8,6 @@ public class ServerUtils {
 
     public static final String LOGIN_URL = BASE_URL + "house/login";
 
-    // TODO change it
-    public static final String STATUS = BASE_URL + "/status/id/code";
+    public static final String STATUS = BASE_URL + "status";
 
 }

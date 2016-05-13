@@ -299,6 +299,7 @@ public class LoginActivity extends AppCompatActivity {
             if (success) {
                 application.isUserConnected = true;
                 application.homeID = homeID;
+                application.password = password;
                 application.persistState();
                 finish();
             } else {

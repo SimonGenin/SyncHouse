@@ -21,10 +21,14 @@ public class SyncHouseApplication extends Application {
     public ConnectedHouse house;
 
     private SharedPreferences preferences;
+    public String currentToken;
+    public String password;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        currentToken = "BASE";
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -32,6 +36,7 @@ public class SyncHouseApplication extends Application {
 
         isUserConnected = preferences.getBoolean("is_user_connected", false);
         homeID = preferences.getString("home_id", "");
+        password = preferences.getString("password", "");
 
         house = new ConnectedHouse(this);
         house.retrieveState();
@@ -43,6 +48,7 @@ public class SyncHouseApplication extends Application {
         Intent disconnectIntent = new Intent(this, LoginActivity.class);
         disconnectIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         disconnectIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         if (criticalError) {
             Toast.makeText(this, "Une erreur critique est survenue.", Toast.LENGTH_LONG).show();
         }
@@ -51,10 +57,12 @@ public class SyncHouseApplication extends Application {
     }
 
 
-    public void persistState() {;
+
+    public void persistState() {
 
         preferences.edit().putBoolean("is_user_connected", isUserConnected).commit();
         preferences.edit().putString("home_id", homeID).commit();
+        preferences.edit().putString("password", password).commit();
         house.saveState();
 
     }
@@ -63,6 +71,8 @@ public class SyncHouseApplication extends Application {
 
         isUserConnected = preferences.getBoolean("is_user_connected", false);
         homeID = preferences.getString("home_id", "");
+        password = preferences.getString("password", "");
         house.retrieveState();
     }
+
 }

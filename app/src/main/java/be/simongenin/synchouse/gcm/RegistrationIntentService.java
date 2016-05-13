@@ -63,6 +63,11 @@ public class RegistrationIntentService extends IntentService {
              */
             sendRegistrationToServer(token);
 
+            /**
+             * On le met dans notre objet application afin de l'avoir globalement
+             */
+            ((SyncHouseApplication)getApplication()).currentToken = token;
+
 
             // TODO remove if not needed
             // Subscribe to topic channels
