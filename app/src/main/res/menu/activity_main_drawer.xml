@@ -47,10 +47,6 @@
                 android:icon="@drawable/ic_menu_add"
                 android:title="Ajouter un module" />
 
-            <item
-                android:id="@+id/nav_settings"
-                android:icon="@drawable/ic_settings"
-                android:title="Paramètres" />
         </menu>
     </item>
 

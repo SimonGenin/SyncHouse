@@ -50,41 +50,24 @@ public class AlarmFragment extends Fragment implements OnStateChangeListener, On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        /**
+         * Retrieve the application
+         */
         application = (SyncHouseApplication) getActivity().getApplication();
+
+        /**
+         * Retrieve the alarm
+         */
         alarm = application.house.alarm;
         alarm.setOnStateChangeListener(this);
 
+        /**
+         * Retrieve requests object
+         */
         poster = new Poster();
         poster.setOnPostFailListener(this);
 
     }
-
-    /**
-     * Listener for the switch used to activate/deactivate the alarms.
-     */
-    public CompoundButton.OnCheckedChangeListener switchListener = new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                if (isChecked) {
-
-                    if (checkboxPartial.isChecked()) {
-                        poster.postState(StatusCodes.ALARM_PARTIAL_START, getActivity(), application, null);
-                    }
-
-                    if (checkboxTotal.isChecked()) {
-                        poster.postState(StatusCodes.ALARM_TOTAL_START, getActivity(), application, null);
-                    }
-
-                }
-
-                else {
-                    poster.postState(StatusCodes.ALARM_STOP, getActivity(), application, null);
-                }
-
-            }
-        };
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -102,7 +85,7 @@ public class AlarmFragment extends Fragment implements OnStateChangeListener, On
         intrusionButton = (Button) v.findViewById(R.id.intrusion_button);
 
         /**
-         * Tweak the layout of those views.
+         * Mach the UI state with the objects state
          */
         updateLayout();
 
@@ -114,8 +97,8 @@ public class AlarmFragment extends Fragment implements OnStateChangeListener, On
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 /**
-                * Make sure that only one checkbox is checked
-                */
+                 * Make sure that only one checkbox is checked
+                 */
                 if (isChecked && checkboxPartial.isChecked()) {
                     checkboxPartial.toggle();
                 }
@@ -152,6 +135,9 @@ public class AlarmFragment extends Fragment implements OnStateChangeListener, On
                  * TODO check distance from the house
                  */
 
+                /**
+                 * Send a post request to stop the siren
+                 */
                 poster.postState(StatusCodes.ALARM_RING_STOP, getActivity(), application, null);
 
             }
@@ -159,7 +145,6 @@ public class AlarmFragment extends Fragment implements OnStateChangeListener, On
 
         /**
          * Set the listener for the switch.
-         * Has it's own object defined outside this function because it is a bit long.
          */
         switchActivate.setOnCheckedChangeListener(switchListener);
 
@@ -167,20 +152,46 @@ public class AlarmFragment extends Fragment implements OnStateChangeListener, On
     }
 
     /**
-     * The fragment must be created with this function.
+     * Listener for the switch used to activate/deactivate the alarms.
      */
-    public static AlarmFragment newInstance() {
-        AlarmFragment fragment = new AlarmFragment();
-        return fragment;
-    }
+    public CompoundButton.OnCheckedChangeListener switchListener = new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                /**
+                 * If it the switch is checked, we look at the checkboxes and send the post
+                 * requests based on these.
+                 */
+                if (isChecked) {
+
+                    if (checkboxPartial.isChecked()) {
+                        poster.postState(StatusCodes.ALARM_PARTIAL_START, getActivity(), application, null);
+                    }
+
+                    if (checkboxTotal.isChecked()) {
+                        poster.postState(StatusCodes.ALARM_TOTAL_START, getActivity(), application, null);
+                    }
+
+                }
+
+                /**
+                 * If it is not checked, let's just send a post request to deactivate the alarm.
+                 */
+                else {
+                    poster.postState(StatusCodes.ALARM_STOP, getActivity(), application, null);
+                }
+            }
+    };
 
     /**
      * Update the UI to match the current state of the alarm.
      */
     private void updateLayout() {
 
-        // Remove the listener so no request are wrongly post when switch is programmatically
-        // toggled
+        /**
+         *  Remove the listener so no request are wrongly post when switch is programmatically
+         *  toggled
+         */
         switchActivate.setOnCheckedChangeListener(null);
 
         /**
@@ -237,6 +248,15 @@ public class AlarmFragment extends Fragment implements OnStateChangeListener, On
         switchActivate.setOnCheckedChangeListener(switchListener);
 
     }
+
+    /**
+     * The fragment must be created with this function.
+     */
+    public static AlarmFragment newInstance() {
+        AlarmFragment fragment = new AlarmFragment();
+        return fragment;
+    }
+
 
     @Override
     public void onStateChange() {

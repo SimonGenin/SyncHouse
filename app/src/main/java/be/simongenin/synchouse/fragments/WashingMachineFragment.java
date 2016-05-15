@@ -16,9 +16,18 @@ import be.simongenin.synchouse.requests.StatusCodes;
 import be.simongenin.synchouse.listeners.OnPostFailListener;
 import be.simongenin.synchouse.utils.Poster;
 
-
+/**
+ * @author Simon Genin
+ *
+ * This class is the controller for the washing machine.
+ * It keeps the state of the alarm sync with the UI and the server.
+ *
+ */
 public class WashingMachineFragment extends Fragment implements OnStateChangeListener, OnPostFailListener {
 
+    /**
+     * UI
+     */
     private Switch switchRunning;
     private Switch switchProgram;
 
@@ -26,6 +35,10 @@ public class WashingMachineFragment extends Fragment implements OnStateChangeLis
     private DomesticMachine washingMachine;
 
     Poster poster;
+
+    public WashingMachineFragment() {
+        // Required empty public constructor
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -132,9 +145,7 @@ public class WashingMachineFragment extends Fragment implements OnStateChangeLis
         }
     };
 
-    public WashingMachineFragment() {
-        // Required empty public constructor
-    }
+
 
     public static WashingMachineFragment newInstance() {
         WashingMachineFragment fragment = new WashingMachineFragment();
