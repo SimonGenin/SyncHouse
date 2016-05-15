@@ -1,12 +1,14 @@
 package be.simongenin.synchouse.models;
 
-import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+
+import be.simongenin.synchouse.listeners.OnStateChangeListener;
 
 public class Mower {
 
     private int sizeGrass;
     private boolean isWorking;
+    private boolean isInterrupted;
 
     OnStateChangeListener stateBroadcaster;
 
@@ -14,13 +16,14 @@ public class Mower {
         sizeGrass = 2;
     }
 
-    /**
-     * Start if mower finished properly it's 4h
-     * check if can start first, runtime exception
-     */
-    public void start() {
+    public boolean isInterrupted() {
+        return isInterrupted;
+    }
 
-        isWorking = true;
+    public void setWorking(boolean working) {
+
+        isWorking = working;
+        isInterrupted = false;
 
         if (stateBroadcaster != null) {
             stateBroadcaster.onStateChange();
@@ -28,18 +31,13 @@ public class Mower {
 
     }
 
-    /**
-     * Stop the mower.
-     * No matter what.
-     */
-    public void stop() {
+    public void interrupt(boolean b) {
 
-        isWorking = false;
+        isInterrupted = true;
 
         if (stateBroadcaster != null) {
             stateBroadcaster.onStateChange();
         }
-
     }
 
     public int getSizeGrass() {
@@ -47,6 +45,7 @@ public class Mower {
     }
 
     public void setSizeGrass(int sizeGrass) {
+
         this.sizeGrass = sizeGrass;
 
         if (stateBroadcaster != null) {
@@ -62,15 +61,10 @@ public class Mower {
         return isWorking;
     }
 
-    public void setWorking(boolean working) {
-        isWorking = working;
-    }
-
-    @SuppressLint("CommitPrefEdits")
     public void saveState(SharedPreferences preferences) {
 
-        preferences.edit().putBoolean("mower_is_working", isWorking).commit();
-        preferences.edit().putInt("size_grass", sizeGrass).commit();
+        preferences.edit().putBoolean("mower_is_working", isWorking).apply();
+        preferences.edit().putInt("size_grass", sizeGrass).apply();
 
     }
 
@@ -80,4 +74,5 @@ public class Mower {
         sizeGrass = preferences.getInt("size_grass", 1);
 
     }
+
 }

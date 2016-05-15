@@ -2,6 +2,8 @@ package be.simongenin.synchouse.models;
 
 import android.content.SharedPreferences;
 
+import be.simongenin.synchouse.listeners.OnStateChangeListener;
+
 public class Windows{
 
     public enum state { OPEN, CLOSED }

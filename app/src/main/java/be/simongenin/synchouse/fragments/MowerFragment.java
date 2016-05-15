@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
@@ -17,9 +18,9 @@ import java.util.Map;
 import be.simongenin.synchouse.R;
 import be.simongenin.synchouse.SyncHouseApplication;
 import be.simongenin.synchouse.models.Mower;
-import be.simongenin.synchouse.models.OnStateChangeListener;
+import be.simongenin.synchouse.listeners.OnStateChangeListener;
 import be.simongenin.synchouse.requests.StatusCodes;
-import be.simongenin.synchouse.utils.OnPostFailListener;
+import be.simongenin.synchouse.listeners.OnPostFailListener;
 import be.simongenin.synchouse.utils.Poster;
 
 
@@ -27,6 +28,7 @@ public class MowerFragment extends Fragment implements OnStateChangeListener, On
 
     private EditText grassSizeEditText;
     private Switch switchMower;
+    private TextView interruptText;
 
     private Mower mower;
     private SyncHouseApplication application;
@@ -54,6 +56,7 @@ public class MowerFragment extends Fragment implements OnStateChangeListener, On
 
         grassSizeEditText = (EditText) v.findViewById(R.id.grass_size);
         switchMower = (Switch) v.findViewById(R.id.switch_activate);
+        interruptText = (TextView) v.findViewById(R.id.interrupt_text);
 
         switchMower.setOnCheckedChangeListener(mowerSwitchListener);
 
@@ -116,7 +119,7 @@ public class MowerFragment extends Fragment implements OnStateChangeListener, On
 
         switchMower.setOnCheckedChangeListener(null);
 
-        grassSizeEditText.setText(mower.getSizeGrass());
+        grassSizeEditText.setText(String.valueOf(mower.getSizeGrass()));
 
         if (mower.isWorking()) {
 
@@ -128,6 +131,12 @@ public class MowerFragment extends Fragment implements OnStateChangeListener, On
 
             if (switchMower.isChecked()) switchMower.toggle();
 
+        }
+
+        if (mower.isInterrupted()) {
+            interruptText.setVisibility(View.VISIBLE);
+        } else {
+            interruptText.setVisibility(View.INVISIBLE);
         }
 
         switchMower.setOnCheckedChangeListener(mowerSwitchListener);
@@ -156,4 +165,5 @@ public class MowerFragment extends Fragment implements OnStateChangeListener, On
         updateLayout();
 
     }
+
 }

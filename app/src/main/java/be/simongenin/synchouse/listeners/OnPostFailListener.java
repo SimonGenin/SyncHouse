@@ -1,4 +1,4 @@
-package be.simongenin.synchouse.utils;
+package be.simongenin.synchouse.listeners;
 
 
 public interface OnPostFailListener {

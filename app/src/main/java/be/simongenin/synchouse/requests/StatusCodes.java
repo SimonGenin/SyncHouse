@@ -19,6 +19,7 @@ public final class StatusCodes {
     public final static int MOWER_START = 20;
     public final static int MOWER_STOP = 21;
     public final static int MOWER_PROBLEM = 22;
+    public final static int MOWER_INTERRUPT = 23;
 
     /**
      * Windows

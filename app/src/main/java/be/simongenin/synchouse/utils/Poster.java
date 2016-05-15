@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import be.simongenin.synchouse.SyncHouseApplication;
+import be.simongenin.synchouse.listeners.OnPostFailListener;
 import be.simongenin.synchouse.requests.PostRequest;
 
 

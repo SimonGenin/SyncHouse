@@ -2,6 +2,8 @@ package be.simongenin.synchouse.models;
 
 import android.content.SharedPreferences;
 
+import be.simongenin.synchouse.listeners.OnStateChangeListener;
+
 public class Alarm {
 
     public enum state { PARTIAL, TOTAL, NONE }

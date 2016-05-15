@@ -14,9 +14,9 @@ import android.widget.TextView;
 import be.simongenin.synchouse.R;
 import be.simongenin.synchouse.SyncHouseApplication;
 import be.simongenin.synchouse.models.Alarm;
-import be.simongenin.synchouse.models.OnStateChangeListener;
+import be.simongenin.synchouse.listeners.OnStateChangeListener;
 import be.simongenin.synchouse.requests.StatusCodes;
-import be.simongenin.synchouse.utils.OnPostFailListener;
+import be.simongenin.synchouse.listeners.OnPostFailListener;
 import be.simongenin.synchouse.utils.Poster;
 
 /**

@@ -53,6 +53,7 @@ import static be.simongenin.synchouse.requests.StatusCodes.DRYER_PROGRAM;
 import static be.simongenin.synchouse.requests.StatusCodes.DRYER_START;
 import static be.simongenin.synchouse.requests.StatusCodes.DRYER_STOP;
 import static be.simongenin.synchouse.requests.StatusCodes.DRYER_WATER_PROBLEM;
+import static be.simongenin.synchouse.requests.StatusCodes.MOWER_INTERRUPT;
 import static be.simongenin.synchouse.requests.StatusCodes.MOWER_START;
 import static be.simongenin.synchouse.requests.StatusCodes.MOWER_STOP;
 import static be.simongenin.synchouse.requests.StatusCodes.SHUTTERS_CLOSE;
@@ -423,12 +424,16 @@ public class MainActivity extends AppCompatActivity
 
             case MOWER_START:
                 // When we start the mower, we need to know the grass height
-                mower.setSizeGrass(Integer.parseInt(data.getString("grass_height")));
+                mower.setSizeGrass(Integer.parseInt(data.getString("grass_size")));
                 mower.setWorking(true);
                 break;
 
             case MOWER_STOP:
                 mower.setWorking(false);
+                break;
+
+            case MOWER_INTERRUPT:
+                mower.interrupt(true);
                 break;
 
             /**

@@ -1,4 +1,4 @@
-package be.simongenin.synchouse.models;
+package be.simongenin.synchouse.listeners;
 
 
 public interface OnStateChangeListener {
