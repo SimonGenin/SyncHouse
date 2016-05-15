@@ -2,34 +2,23 @@ package be.simongenin.synchouse.fragments;
 
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.Toast;
-
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import be.simongenin.synchouse.R;
 import be.simongenin.synchouse.SyncHouseApplication;
+import be.simongenin.synchouse.models.OnStateChangeListener;
 import be.simongenin.synchouse.models.Windows;
-import be.simongenin.synchouse.requests.PostRequest;
 import be.simongenin.synchouse.requests.StatusCodes;
-import be.simongenin.synchouse.utils.JSONUtils;
-import be.simongenin.synchouse.utils.ServerUtils;
+import be.simongenin.synchouse.utils.OnPostFailListener;
+import be.simongenin.synchouse.utils.Poster;
 
 
-public class WindowsFragment extends Fragment {
+public class WindowsFragment extends Fragment implements OnStateChangeListener, OnPostFailListener {
 
     private Switch shutterSwitch;
     private Switch windowsSwitch;
@@ -37,12 +26,18 @@ public class WindowsFragment extends Fragment {
     private SyncHouseApplication application;
     private Windows windows;
 
+    private Poster poster;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         application = (SyncHouseApplication)getActivity().getApplication();
-        windows = new Windows();
+        windows = application.house.windows;
+        windows.setOnStateChangeListener(this);
+
+        poster = new Poster();
+        poster.setOnPostFailListener(this);
 
     }
 
@@ -55,71 +50,19 @@ public class WindowsFragment extends Fragment {
         windowsSwitch = (Switch) v.findViewById(R.id.switch_activate_windows);
         shutterSwitch = (Switch) v.findViewById(R.id.switch_activate_shutters);
 
-        setLayout();
-
         windowsSwitch.setOnCheckedChangeListener(windowsSwitchListener);
         shutterSwitch.setOnCheckedChangeListener(shutterSwitchListener);
+
+        updateLayout();
 
         return v;
     }
 
 
-    private void postWindows(final int code) {
-
-        Map<String, String> params = new HashMap<>();
-        params.put("status_code", String.valueOf(code));
-        params.put("home_id", application.homeID);
-        params.put("password", application.password);
-
-        PostRequest windowsRequest = new PostRequest(ServerUtils.STATUS, params, new Response.Listener<String>() {
-
-            @Override
-            public void onResponse(String response) {
-
-                try {
-
-                    // Let's make our response a json object
-                    JSONObject jsonObject = new JSONObject(response);
-
-                    if (JSONUtils.getSuccess(jsonObject)) {
-                        windows.saveState(PreferenceManager.getDefaultSharedPreferences(getActivity()));
-                        setLayout();
-                    }
-
-                    else {
-                        Toast.makeText(getActivity(), JSONUtils.getError(jsonObject), Toast.LENGTH_LONG).show();
-                        setLayout();
-                    }
-
-                } catch (JSONException e) {
-                    Toast.makeText(getActivity(), "La reponse du server est corrompue.", Toast.LENGTH_LONG).show();
-                    setLayout();
-                    e.printStackTrace();
-                }
-
-            }
-
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Toast.makeText(getActivity(), "Une erreur est survenue.", Toast.LENGTH_LONG).show();
-                setLayout();
-
-            }
-        });
-
-        // Send the request
-        application.requestQueue.add(windowsRequest);
-
-    }
-
-    private void setLayout() {
+    private void updateLayout() {
 
         windowsSwitch.setOnCheckedChangeListener(null);
         shutterSwitch.setOnCheckedChangeListener(null);
-
-        windows.retrieveState(PreferenceManager.getDefaultSharedPreferences(getActivity()));
 
         if (windows.getWindowState() == Windows.state.OPEN) {
             if (!windowsSwitch.isChecked()) windowsSwitch.toggle();
@@ -140,8 +83,6 @@ public class WindowsFragment extends Fragment {
         windowsSwitch.setOnCheckedChangeListener(windowsSwitchListener);
         shutterSwitch.setOnCheckedChangeListener(shutterSwitchListener);
 
-        windows.saveState(PreferenceManager.getDefaultSharedPreferences(getActivity()));
-
     }
 
     public CompoundButton.OnCheckedChangeListener windowsSwitchListener = new CompoundButton.OnCheckedChangeListener() {
@@ -150,13 +91,11 @@ public class WindowsFragment extends Fragment {
 
             if (isChecked) {
 
-                // windows.setWindowState(Windows.state.OPEN);
-                postWindows(StatusCodes.WINDOWS_OPEN);
+                poster.postState(StatusCodes.WINDOWS_OPEN, getActivity(), application, null);
 
             } else {
 
-                // windows.setWindowState(Windows.state.CLOSED);
-                postWindows(StatusCodes.WINDOWS_CLOSE);
+                poster.postState(StatusCodes.WINDOWS_CLOSE, getActivity(), application, null);
 
             }
 
@@ -169,13 +108,11 @@ public class WindowsFragment extends Fragment {
 
             if (isChecked) {
 
-                // windows.setShutterState(Windows.state.OPEN);
-                postWindows(StatusCodes.SHUTTERS_OPEN);
+                poster.postState(StatusCodes.SHUTTERS_OPEN, getActivity(), application, null);
 
             } else {
 
-                // windows.setShutterState(Windows.state.CLOSED);
-                postWindows(StatusCodes.SHUTTERS_CLOSE);
+                poster.postState(StatusCodes.SHUTTERS_CLOSE, getActivity(), application, null);
 
             }
 
@@ -189,9 +126,20 @@ public class WindowsFragment extends Fragment {
 
     public static WindowsFragment newInstance() {
         WindowsFragment fragment = new WindowsFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
         return fragment;
     }
 
+    @Override
+    public void onStateChange() {
+
+        updateLayout();
+
+    }
+
+    @Override
+    public void onPostFail() {
+
+        updateLayout();
+
+    }
 }

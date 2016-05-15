@@ -38,6 +38,7 @@ public final class StatusCodes {
     public final static int DRYER_STOP = 42;
     public final static int DRYER_WATER_PROBLEM = 43;
     public final static int DRYER_ELECTRICAL_PROBLEM = 44;
+    public final static int DRYER_CANCEL_PROGRAM = 45;
 
     /**
      * Washing machine
@@ -47,6 +48,7 @@ public final class StatusCodes {
     public final static int WASHING_MACHINE_STOP = 52;
     public final static int WASHING_MACHINE_WATER_PROBLEM = 53;
     public final static int WASHING_MACHINE_ELECTRICAL_PROBLEM = 54;
+    public static final int WASHING_MACHINE_CANCEL_PROGRAM = 55;
 
     /**
      * Dish washer
@@ -56,5 +58,7 @@ public final class StatusCodes {
     public final static int DISH_WASHER_STOP = 62;
     public final static int DISH_WASHER_WATER_PROBLEM = 63;
     public final static int DISH_WASHER_ELECTRICAL_PROBLEM = 64;
+    public final static int DISH_WASHER_CANCEL_PROGRAM = 65;
+
 
 }

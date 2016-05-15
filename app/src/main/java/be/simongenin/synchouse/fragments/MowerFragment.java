@@ -2,7 +2,6 @@ package be.simongenin.synchouse.fragments;
 
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,25 +11,19 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import be.simongenin.synchouse.R;
 import be.simongenin.synchouse.SyncHouseApplication;
 import be.simongenin.synchouse.models.Mower;
-import be.simongenin.synchouse.requests.PostRequest;
+import be.simongenin.synchouse.models.OnStateChangeListener;
 import be.simongenin.synchouse.requests.StatusCodes;
-import be.simongenin.synchouse.utils.JSONUtils;
-import be.simongenin.synchouse.utils.ServerUtils;
+import be.simongenin.synchouse.utils.OnPostFailListener;
+import be.simongenin.synchouse.utils.Poster;
 
 
-public class MowerFragment extends Fragment {
+public class MowerFragment extends Fragment implements OnStateChangeListener, OnPostFailListener {
 
     private EditText grassSizeEditText;
     private Switch switchMower;
@@ -38,14 +31,18 @@ public class MowerFragment extends Fragment {
     private Mower mower;
     private SyncHouseApplication application;
 
+    private Poster poster;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mower = new Mower();
-        mower.retrieveState(PreferenceManager.getDefaultSharedPreferences(getActivity()));
-
         application = (SyncHouseApplication) getActivity().getApplication();
+        mower = application.house.mower;
+        mower.setOnStateChangeListener(this);
+
+        poster = new Poster();
+        poster.setOnPostFailListener(this);
 
     }
 
@@ -59,6 +56,8 @@ public class MowerFragment extends Fragment {
         switchMower = (Switch) v.findViewById(R.id.switch_activate);
 
         switchMower.setOnCheckedChangeListener(mowerSwitchListener);
+
+        updateLayout();
 
         return v;
     }
@@ -74,88 +73,50 @@ public class MowerFragment extends Fragment {
                  * Grass size
                  */
                 int grassSize = 0;
+
                 try {
+
                    grassSize = Integer.parseInt(grassSizeEditText.getText().toString().trim());
+
                 } catch (Exception e) {
+
                     Toast.makeText(getActivity(), "Votre taille de tonte ne semble pas valide.", Toast.LENGTH_LONG).show();
                     return;
-                }
-                if (grassSize < 0 ) {
-                    Toast.makeText(getActivity(), "Votre taille de tonte ne semble pas valide.", Toast.LENGTH_LONG).show();
-                    return;
+
                 }
 
-                mower.setWorking(true);
-                postMower(StatusCodes.MOWER_START, grassSize);
+                if (grassSize < 0 ) {
+
+                    Toast.makeText(getActivity(), "Votre taille de tonte ne semble pas valide.", Toast.LENGTH_LONG).show();
+                    return;
+
+                }
+
+                poster.postState(StatusCodes.MOWER_START, getActivity(), application, getGrassArgs(grassSize));
 
 
             } else {
 
-                mower.setWorking(false);
-                postMower(StatusCodes.MOWER_STOP, 0);
-
+                poster.postState(StatusCodes.MOWER_STOP, getActivity(), application, null);
 
             }
 
         }
     };
 
-    private void postMower(int code, int grassSize) {
+    private Map<String, String> getGrassArgs(int grassHeight) {
 
-        Map<String, String> params = new HashMap<>();
-        params.put("status_code", String.valueOf(code));
-        params.put("home_id", application.homeID);
-        params.put("password", application.password);
-        params.put("grass_size", String.valueOf(grassSize));
-
-        PostRequest mowerRequest = new PostRequest(ServerUtils.STATUS, params, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                try {
-
-                    // Let's make our response a json object
-                    JSONObject jsonObject = new JSONObject(response);
-
-                    if (JSONUtils.getSuccess(jsonObject)) {
-
-                        mower.saveState(PreferenceManager.getDefaultSharedPreferences(getActivity()));
-                        setLayout();
-                    }
-
-                    else {
-
-                        setLayout();
-                        Toast.makeText(getActivity(), JSONUtils.getError(jsonObject), Toast.LENGTH_LONG).show();
-                    }
-
-                } catch (JSONException e) {
-
-                    Toast.makeText(getActivity(), "La reponse du server est corrompue.", Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                    setLayout();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Toast.makeText(getActivity(), "Une erreur est survenue.", Toast.LENGTH_LONG).show();
-                setLayout();
-
-            }
-        });
-
-        // Send the request
-        application.requestQueue.add(mowerRequest);
+        Map<String, String> args = new HashMap<>();
+        args.put("grass_size", String.valueOf(grassHeight));
+        return args;
 
     }
 
-    private void setLayout() {
+    private void updateLayout() {
 
-        mower.retrieveState(PreferenceManager.getDefaultSharedPreferences(getActivity()));
         switchMower.setOnCheckedChangeListener(null);
+
+        grassSizeEditText.setText(mower.getSizeGrass());
 
         if (mower.isWorking()) {
 
@@ -182,4 +143,17 @@ public class MowerFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onPostFail() {
+
+        updateLayout();
+
+    }
+
+    @Override
+    public void onStateChange() {
+
+        updateLayout();
+
+    }
 }

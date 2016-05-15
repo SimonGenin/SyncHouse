@@ -10,11 +10,8 @@ public class Mower {
 
     OnStateChangeListener stateBroadcaster;
 
-
     public Mower() {
-
         sizeGrass = 2;
-
     }
 
     /**
@@ -24,7 +21,10 @@ public class Mower {
     public void start() {
 
         isWorking = true;
-        stateBroadcaster.onStateChange();
+
+        if (stateBroadcaster != null) {
+            stateBroadcaster.onStateChange();
+        }
 
     }
 
@@ -35,7 +35,10 @@ public class Mower {
     public void stop() {
 
         isWorking = false;
-        stateBroadcaster.onStateChange();
+
+        if (stateBroadcaster != null) {
+            stateBroadcaster.onStateChange();
+        }
 
     }
 
@@ -45,7 +48,14 @@ public class Mower {
 
     public void setSizeGrass(int sizeGrass) {
         this.sizeGrass = sizeGrass;
-        stateBroadcaster.onStateChange();
+
+        if (stateBroadcaster != null) {
+            stateBroadcaster.onStateChange();
+        }
+    }
+
+    public void setOnStateChangeListener(OnStateChangeListener stateListener) {
+        stateBroadcaster = stateListener;
     }
 
     public boolean isWorking() {

@@ -17,7 +17,7 @@ import be.simongenin.synchouse.models.Alarm;
 import be.simongenin.synchouse.models.OnStateChangeListener;
 import be.simongenin.synchouse.requests.StatusCodes;
 import be.simongenin.synchouse.utils.OnPostFailListener;
-import be.simongenin.synchouse.utils.PostUtils;
+import be.simongenin.synchouse.utils.Poster;
 
 /**
  * @author Simon Genin
@@ -40,6 +40,8 @@ public class AlarmFragment extends Fragment implements OnStateChangeListener, On
     private Alarm alarm;
     private SyncHouseApplication application;
 
+    private Poster poster;
+
     public AlarmFragment() {
         // Required empty public constructor
     }
@@ -51,6 +53,9 @@ public class AlarmFragment extends Fragment implements OnStateChangeListener, On
         application = (SyncHouseApplication) getActivity().getApplication();
         alarm = application.house.alarm;
         alarm.setOnStateChangeListener(this);
+
+        poster = new Poster();
+        poster.setOnPostFailListener(this);
 
     }
 
@@ -64,17 +69,17 @@ public class AlarmFragment extends Fragment implements OnStateChangeListener, On
                 if (isChecked) {
 
                     if (checkboxPartial.isChecked()) {
-                        PostUtils.postState(StatusCodes.ALARM_PARTIAL_START, getActivity(), application, null);
+                        poster.postState(StatusCodes.ALARM_PARTIAL_START, getActivity(), application, null);
                     }
 
                     if (checkboxTotal.isChecked()) {
-                        PostUtils.postState(StatusCodes.ALARM_TOTAL_START, getActivity(), application, null);
+                        poster.postState(StatusCodes.ALARM_TOTAL_START, getActivity(), application, null);
                     }
 
                 }
 
                 else {
-                    PostUtils.postState(StatusCodes.ALARM_STOP, getActivity(), application, null);
+                    poster.postState(StatusCodes.ALARM_STOP, getActivity(), application, null);
                 }
 
             }
@@ -147,7 +152,7 @@ public class AlarmFragment extends Fragment implements OnStateChangeListener, On
                  * TODO check distance from the house
                  */
 
-                PostUtils.postState(StatusCodes.ALARM_RING_STOP, getActivity(), application, null);
+                poster.postState(StatusCodes.ALARM_RING_STOP, getActivity(), application, null);
 
             }
         });

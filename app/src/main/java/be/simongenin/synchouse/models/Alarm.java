@@ -10,6 +10,7 @@ public class Alarm {
     private boolean isSirenActive;
 
     private OnStateChangeListener stateBroadcaster;
+//    private OnPostFailListener failBroadcaster;
 
     public Alarm() {
 
@@ -21,6 +22,10 @@ public class Alarm {
     public void setOnStateChangeListener(OnStateChangeListener stateListener) {
         stateBroadcaster = stateListener;
     }
+
+//    public void setOnPostFailListener(OnPostFailListener failListener) {
+//        failBroadcaster = failListener;
+//    }
 
     public state getCurrentState() {
         return currentState;

@@ -17,11 +17,15 @@ import be.simongenin.synchouse.SyncHouseApplication;
 import be.simongenin.synchouse.requests.PostRequest;
 
 
-public class PostUtils {
+public class Poster {
 
-    private static OnPostFailListener failBroadcaster;
+    private OnPostFailListener failBroadcaster;
 
-    public static void postState(int code, final Context context, SyncHouseApplication application, Map<String, String> additionalArgs) {
+    public void setOnPostFailListener(OnPostFailListener failListener) {
+        this.failBroadcaster = failListener;
+    }
+
+    public void postState(int code, final Context context, SyncHouseApplication application, Map<String, String> additionalArgs) {
 
         /**
          * Creates the post request parameters.

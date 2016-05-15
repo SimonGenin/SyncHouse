@@ -20,12 +20,21 @@ public class Windows{
 
     public void setWindowState(state s) {
         windowState = s;
-        stateBroadcaster.onStateChange();
+
+        if (stateBroadcaster != null) {
+            stateBroadcaster.onStateChange();
+        }
     }
 
     public void setShutterState(state s) {
         shutterState = s;
-        stateBroadcaster.onStateChange();
+        if (stateBroadcaster != null) {
+            stateBroadcaster.onStateChange();
+        }
+    }
+
+    public void setOnStateChangeListener(OnStateChangeListener stateListener) {
+        stateBroadcaster = stateListener;
     }
 
     public void saveState(SharedPreferences preferences) {
