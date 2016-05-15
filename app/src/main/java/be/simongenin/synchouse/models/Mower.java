@@ -1,11 +1,14 @@
 package be.simongenin.synchouse.models;
 
+import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 
 public class Mower {
 
     private int sizeGrass;
     private boolean isWorking;
+
+    OnStateChangeListener stateBroadcaster;
 
 
     public Mower() {
@@ -20,7 +23,8 @@ public class Mower {
      */
     public void start() {
 
-       isWorking = true;
+        isWorking = true;
+        stateBroadcaster.onStateChange();
 
     }
 
@@ -31,6 +35,7 @@ public class Mower {
     public void stop() {
 
         isWorking = false;
+        stateBroadcaster.onStateChange();
 
     }
 
@@ -40,6 +45,7 @@ public class Mower {
 
     public void setSizeGrass(int sizeGrass) {
         this.sizeGrass = sizeGrass;
+        stateBroadcaster.onStateChange();
     }
 
     public boolean isWorking() {
@@ -50,10 +56,11 @@ public class Mower {
         isWorking = working;
     }
 
+    @SuppressLint("CommitPrefEdits")
     public void saveState(SharedPreferences preferences) {
 
-        preferences.edit().putBoolean("mower_is_working", isWorking).apply();
-        preferences.edit().putInt("size_grass", sizeGrass).apply();
+        preferences.edit().putBoolean("mower_is_working", isWorking).commit();
+        preferences.edit().putInt("size_grass", sizeGrass).commit();
 
     }
 
@@ -63,5 +70,4 @@ public class Mower {
         sizeGrass = preferences.getInt("size_grass", 1);
 
     }
-
 }

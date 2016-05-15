@@ -16,7 +16,7 @@
             android:padding="16dp"
             >
 
-            <android.support.v7.widget.SwitchCompat
+            <Switch
                 android:id="@+id/switch_activate_shutters"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -46,7 +46,7 @@
             android:padding="16dp"
             >
 
-            <android.support.v7.widget.SwitchCompat
+            <Switch
                 android:id="@+id/switch_activate_windows"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

@@ -9,15 +9,20 @@ public class DomesticMachine {
 
     protected boolean isWorking;
 
+    OnStateChangeListener stateBroadcaster;
+
+
     public void start() {
 
         isWorking = true;
+        stateBroadcaster.onStateChange();
 
     }
 
     public void stop() {
 
         isWorking = false;
+        stateBroadcaster.onStateChange();
 
     }
 

@@ -7,14 +7,13 @@ import android.preference.PreferenceManager;
 
 public class ConnectedHouse {
 
-    private Alarm alarm;
-    private Mower mower;
-    private Windows windows;
-    private DomesticMachine washingMachine;
-    private DomesticMachine dryer;
-    private DomesticMachine dishWasher;
+    public Alarm alarm;
+    public Mower mower;
+    public Windows windows;
+    public DomesticMachine washingMachine;
+    public DomesticMachine dryer;
+    public DomesticMachine dishWasher;
 
-    private Context context;
     private SharedPreferences prefs;
 
     public ConnectedHouse (Context context) {

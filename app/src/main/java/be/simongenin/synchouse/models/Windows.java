@@ -9,6 +9,8 @@ public class Windows{
     private state windowState;
     private state shutterState;
 
+    OnStateChangeListener stateBroadcaster;
+
     public Windows() {
 
         windowState = state.CLOSED;
@@ -18,11 +20,12 @@ public class Windows{
 
     public void setWindowState(state s) {
         windowState = s;
-
+        stateBroadcaster.onStateChange();
     }
 
     public void setShutterState(state s) {
         shutterState = s;
+        stateBroadcaster.onStateChange();
     }
 
     public void saveState(SharedPreferences preferences) {
@@ -53,6 +56,14 @@ public class Windows{
         preferences.edit().putInt("window_state", windowsState).apply();
         preferences.edit().putInt("shutter_state", shuttersState).apply();
 
+    }
+
+    public state getWindowState() {
+        return windowState;
+    }
+
+    public state getShutterState() {
+        return shutterState;
     }
 
     public void retrieveState(SharedPreferences preferences) {

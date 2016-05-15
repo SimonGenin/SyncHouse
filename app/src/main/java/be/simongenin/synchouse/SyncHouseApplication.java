@@ -14,7 +14,7 @@ import be.simongenin.synchouse.requests.OkHttpStack;
 
 public class SyncHouseApplication extends Application {
 
-    // The request queue for the application
+
     public RequestQueue requestQueue;
     public boolean isUserConnected;
     public String homeID;
@@ -52,6 +52,7 @@ public class SyncHouseApplication extends Application {
         if (criticalError) {
             Toast.makeText(this, "Une erreur critique est survenue.", Toast.LENGTH_LONG).show();
         }
+
         startActivity(disconnectIntent);
 
     }

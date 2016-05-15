@@ -43,7 +43,6 @@
         </receiver>
         <!-- [END gcm_receiver] -->
 
-
         <!-- [START gcm_listener] -->
         <service
             android:name=".gcm.SyncHouseGcmListenerService"

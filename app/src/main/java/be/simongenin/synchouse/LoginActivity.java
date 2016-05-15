@@ -207,7 +207,7 @@ public class LoginActivity extends AppCompatActivity {
             parameters.put("home_id", homeID);
             parameters.put("password", password);
 
-            PostRequest loginRequest = new PostRequest(url, parameters, new Response.Listener<String>() {
+            final PostRequest loginRequest = new PostRequest(url, parameters, new Response.Listener<String>() {
 
                 @Override
                 public void onResponse(String response) {
@@ -265,7 +265,8 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onRequestFinished(Request<String> request) {
 
-                    isFinished = true;
+                    if (request.equals(loginRequest))
+                        isFinished = true;
 
                 }
 

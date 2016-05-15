@@ -32,6 +32,38 @@ import be.simongenin.synchouse.fragments.WashingMachineFragment;
 import be.simongenin.synchouse.fragments.WindowsFragment;
 import be.simongenin.synchouse.gcm.GCMPreferences;
 import be.simongenin.synchouse.gcm.RegistrationIntentService;
+import be.simongenin.synchouse.models.Alarm;
+import be.simongenin.synchouse.models.ConnectedHouse;
+import be.simongenin.synchouse.models.DomesticMachine;
+import be.simongenin.synchouse.models.Mower;
+import be.simongenin.synchouse.models.Windows;
+
+import static be.simongenin.synchouse.requests.StatusCodes.ALARM_PARTIAL_START;
+import static be.simongenin.synchouse.requests.StatusCodes.ALARM_RING_START;
+import static be.simongenin.synchouse.requests.StatusCodes.ALARM_RING_STOP;
+import static be.simongenin.synchouse.requests.StatusCodes.ALARM_STOP;
+import static be.simongenin.synchouse.requests.StatusCodes.ALARM_TOTAL_START;
+import static be.simongenin.synchouse.requests.StatusCodes.DISH_WASHER_ELECTRICAL_PROBLEM;
+import static be.simongenin.synchouse.requests.StatusCodes.DISH_WASHER_PROGRAM;
+import static be.simongenin.synchouse.requests.StatusCodes.DISH_WASHER_START;
+import static be.simongenin.synchouse.requests.StatusCodes.DISH_WASHER_STOP;
+import static be.simongenin.synchouse.requests.StatusCodes.DISH_WASHER_WATER_PROBLEM;
+import static be.simongenin.synchouse.requests.StatusCodes.DRYER_ELECTRICAL_PROBLEM;
+import static be.simongenin.synchouse.requests.StatusCodes.DRYER_PROGRAM;
+import static be.simongenin.synchouse.requests.StatusCodes.DRYER_START;
+import static be.simongenin.synchouse.requests.StatusCodes.DRYER_STOP;
+import static be.simongenin.synchouse.requests.StatusCodes.DRYER_WATER_PROBLEM;
+import static be.simongenin.synchouse.requests.StatusCodes.MOWER_START;
+import static be.simongenin.synchouse.requests.StatusCodes.MOWER_STOP;
+import static be.simongenin.synchouse.requests.StatusCodes.SHUTTERS_CLOSE;
+import static be.simongenin.synchouse.requests.StatusCodes.SHUTTERS_OPEN;
+import static be.simongenin.synchouse.requests.StatusCodes.WASHING_MACHINE_ELECTRICAL_PROBLEM;
+import static be.simongenin.synchouse.requests.StatusCodes.WASHING_MACHINE_PROGRAM;
+import static be.simongenin.synchouse.requests.StatusCodes.WASHING_MACHINE_START;
+import static be.simongenin.synchouse.requests.StatusCodes.WASHING_MACHINE_STOP;
+import static be.simongenin.synchouse.requests.StatusCodes.WASHING_MACHINE_WATER_PROBLEM;
+import static be.simongenin.synchouse.requests.StatusCodes.WINDOWS_CLOSE;
+import static be.simongenin.synchouse.requests.StatusCodes.WINDOWS_OPEN;
 
 
 /***
@@ -58,6 +90,7 @@ public class MainActivity extends AppCompatActivity
 
     // The broadcast receiver
     private BroadcastReceiver registrationBroadcastReceiver;
+    private BroadcastReceiver statusCodeBroadcastReceiver;
 
     // The drawer
     private DrawerLayout drawer;
@@ -103,6 +136,22 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        statusCodeBroadcastReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                Log.i(TAG, "Status code broadcast received : " + intent.toString());
+
+                int statusCode = intent.getIntExtra("status_code", 0);
+                Bundle args = intent.getBundleExtra("args");
+
+                applyStatusCode(statusCode, args);
+
+            }
+
+        };
+
         /**
          * Prepare the toolbar
          */
@@ -140,15 +189,19 @@ public class MainActivity extends AppCompatActivity
         application.retrieveState();
         LocalBroadcastManager.getInstance(this).registerReceiver(registrationBroadcastReceiver,
                 new IntentFilter(GCMPreferences.REGISTRATION_COMPLETE));
+        LocalBroadcastManager.getInstance(this).registerReceiver(statusCodeBroadcastReceiver,
+                new IntentFilter("status_code"));
     }
 
-    @Override
+     @Override
     protected void onPause() {
+
         /**
          * If the app is in the pause state, let's unregister the receiver.
          */
         application.persistState();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(registrationBroadcastReceiver);
+         LocalBroadcastManager.getInstance(this).unregisterReceiver(registrationBroadcastReceiver);
+         LocalBroadcastManager.getInstance(this).unregisterReceiver(statusCodeBroadcastReceiver);
         super.onPause();
     }
 
@@ -297,5 +350,160 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * This method dispatch the status code.
+     * Then, it processes them.
+     *
+     * @param statusCode the status code
+     * @param data additional data are in there. Such as the grass height
+     */
+    private void applyStatusCode(int statusCode, Bundle data) {
+
+
+        SyncHouseApplication application = (SyncHouseApplication) getApplication();
+        ConnectedHouse house = application.house;
+
+        Alarm alarm = house.alarm;
+        Windows windows = house.windows;
+        Mower mower = house.mower;
+        DomesticMachine dryer = house.dryer;
+        DomesticMachine washingMachine = house.washingMachine;
+        DomesticMachine dishWasher = house.dishWasher;
+
+        switch (statusCode) {
+
+            /**
+             * Alarms
+             */
+
+            case ALARM_TOTAL_START:
+                alarm.setState(Alarm.state.TOTAL);
+                break;
+
+            case ALARM_PARTIAL_START :
+                alarm.setState(Alarm.state.PARTIAL);
+                break;
+
+            case ALARM_STOP:
+                alarm.setState(Alarm.state.NONE);
+                break;
+
+            case ALARM_RING_START:
+                alarm.activeSiren();
+                break;
+
+            case ALARM_RING_STOP:
+                alarm.turnOffAlarmSound();
+                break;
+
+            /**
+             * Windows
+             */
+
+            case WINDOWS_OPEN:
+                windows.setWindowState(Windows.state.OPEN);
+                break;
+
+            case WINDOWS_CLOSE:
+                windows.setWindowState(Windows.state.CLOSED);
+                break;
+
+            case SHUTTERS_OPEN:
+                Log.d("Coucou", "Le serveur dit de'ouvrir les volets avec GCM.");
+                windows.setShutterState(Windows.state.OPEN);
+                break;
+
+            case SHUTTERS_CLOSE:
+                windows.setShutterState(Windows.state.CLOSED);
+                break;
+
+            /**
+             * Mower
+             */
+
+            case MOWER_START:
+                // When we start the mower, we need to know the grass height
+                mower.setSizeGrass(Integer.parseInt(data.getString("grass_height")));
+                mower.setWorking(true);
+                break;
+
+            case MOWER_STOP:
+                mower.setWorking(false);
+                break;
+
+            /**
+             * Dryer
+             */
+            case DRYER_PROGRAM:
+                dryer.start();
+                break;
+
+            case DRYER_START:
+                dryer.start();
+                break;
+
+            case DRYER_STOP:
+                dryer.stop();
+                break;
+
+            case DRYER_WATER_PROBLEM:
+                dryer.stop();
+                break;
+
+            case DRYER_ELECTRICAL_PROBLEM:
+                dryer.stop();
+                break;
+
+            /**
+             * Washing machine
+             */
+
+            case WASHING_MACHINE_PROGRAM:
+                washingMachine.start();
+                break;
+
+            case WASHING_MACHINE_START:
+                washingMachine.start();
+                break;
+
+            case WASHING_MACHINE_STOP:
+                washingMachine.stop();
+                break;
+
+            case WASHING_MACHINE_WATER_PROBLEM:
+                washingMachine.stop();
+                break;
+
+            case WASHING_MACHINE_ELECTRICAL_PROBLEM:
+                washingMachine.stop();
+                break;
+
+            /**
+             * Dish washer
+             */
+
+            case DISH_WASHER_PROGRAM:
+                dishWasher.start();
+                break;
+
+            case DISH_WASHER_START:
+                dishWasher.start();
+                break;
+
+            case DISH_WASHER_STOP:
+                dishWasher.stop();
+                break;
+
+            case DISH_WASHER_WATER_PROBLEM:
+                dishWasher.stop();
+                break;
+
+            case DISH_WASHER_ELECTRICAL_PROBLEM:
+                dishWasher.stop();
+                break;
+
+        }
+
+    }
 
 }

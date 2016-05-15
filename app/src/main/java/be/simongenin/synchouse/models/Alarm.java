@@ -4,12 +4,12 @@ import android.content.SharedPreferences;
 
 public class Alarm {
 
-
     public enum state { PARTIAL, TOTAL, NONE }
 
     private state currentState;
     private boolean isSirenActive;
 
+    private OnStateChangeListener stateBroadcaster;
 
     public Alarm() {
 
@@ -18,32 +18,44 @@ public class Alarm {
 
     }
 
+    public void setOnStateChangeListener(OnStateChangeListener stateListener) {
+        stateBroadcaster = stateListener;
+    }
+
     public state getCurrentState() {
         return currentState;
     }
 
-    public void turnOffAlarmSound() {
+    public void activeSiren() {
+        isSirenActive = true;
 
+        if (stateBroadcaster != null) {
+            stateBroadcaster.onStateChange();
+        }
+    }
+
+    public void turnOffAlarmSound() {
         isSirenActive = false;
-        currentState = state.NONE;
+
+        if (stateBroadcaster != null) {
+            stateBroadcaster.onStateChange();
+        }
 
     }
 
     public void setState(state s) {
-
         currentState = s;
-    }
 
+        if (stateBroadcaster != null) {
+            stateBroadcaster.onStateChange();
+        }
+
+    }
 
     public boolean isSirenActive() {
         return isSirenActive;
     }
-    public void activeSiren() {
-        isSirenActive = true;
-    }
-    public void deactivateSiren() {
-        isSirenActive = false;
-    }
+
 
 
     public void saveState(SharedPreferences preferences) {
