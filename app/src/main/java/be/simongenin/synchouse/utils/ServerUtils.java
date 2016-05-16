@@ -4,7 +4,6 @@ package be.simongenin.synchouse.utils;
  * @author Simon Genin
  *
  * Contains utilities about the server.
- * The application only uses POST request.
  */
 public class ServerUtils {
 

@@ -36,6 +36,7 @@ import be.simongenin.synchouse.models.ConnectedHouse;
 import be.simongenin.synchouse.models.DomesticMachine;
 import be.simongenin.synchouse.models.Mower;
 import be.simongenin.synchouse.models.Windows;
+import be.simongenin.synchouse.utils.SyncUtils;
 
 import static be.simongenin.synchouse.requests.StatusCodes.ALARM_PARTIAL_START;
 import static be.simongenin.synchouse.requests.StatusCodes.ALARM_RING_START;
@@ -248,6 +249,10 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_disconnect) {
             application.disconnect(false);
+        }
+
+        if (id == R.id.action_sync) {
+            SyncUtils.sync(this, application);
         }
 
         return super.onOptionsItemSelected(item);

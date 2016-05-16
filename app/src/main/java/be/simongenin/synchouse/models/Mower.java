@@ -57,6 +57,7 @@ public class Mower {
     public void interrupt(boolean b) {
 
         isInterrupted = true;
+        isWorking = true;
 
         if (stateBroadcaster != null) {
             stateBroadcaster.onStateChange();

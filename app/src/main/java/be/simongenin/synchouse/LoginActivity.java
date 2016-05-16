@@ -31,6 +31,7 @@ import java.util.Map;
 
 import be.simongenin.synchouse.requests.PostRequest;
 import be.simongenin.synchouse.utils.ServerUtils;
+import be.simongenin.synchouse.utils.SyncUtils;
 
 /**
  * @author Simon Genin
@@ -225,6 +226,8 @@ public class LoginActivity extends AppCompatActivity {
         private boolean isPasswordRight = false;
         private boolean isFinished = false;
 
+        private JSONObject jsonResponse;
+
         UserLoginTask(String homeID, String password) {
             this.homeID = homeID;
             this.password = password;
@@ -249,7 +252,7 @@ public class LoginActivity extends AppCompatActivity {
                          * We retrieve the infos back from the server
                          */
 
-                        JSONObject jsonResponse = new JSONObject(response);
+                        jsonResponse = new JSONObject(response);
                         isHomeIDRight = jsonResponse.getBoolean("home_id");
                         isPasswordRight = jsonResponse.getBoolean("password");
 
@@ -337,6 +340,12 @@ public class LoginActivity extends AppCompatActivity {
                 application.isUserConnected = true;
                 application.homeID = homeID;
                 application.password = password;
+
+                /**
+                 * Put all the date from the server in the phone
+                 */
+                SyncUtils.putLocalDataUpToDate(jsonResponse, application);
+
                 application.persistState();
 
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -374,19 +383,10 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
         }
     }
+
+
+
 }
 
-/**
- * {
- *     ...
- *     states : {
- *        alarm : 1 / 2 / 3
- *        windows : 1 / 2
- *        shutters : 1 / 2
- *        mower : 1 / 2 / 3
- *        washingMachine : 1, 2, 3
- *
- *     }
- * }
- */
+
 

@@ -78,6 +78,7 @@ public class SyncHouseApplication extends Application {
     public void disconnect(boolean criticalError) {
 
         isUserConnected = false;
+        homeID = "BASE";
 
         /**
          * Sent the disconnect user to the login page
