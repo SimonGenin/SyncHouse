@@ -17,11 +17,21 @@ import be.simongenin.synchouse.SyncHouseApplication;
 import be.simongenin.synchouse.listeners.OnPostFailListener;
 import be.simongenin.synchouse.requests.PostRequest;
 
-
+/**
+ * @author Simon Genin
+ *
+ * This class is a helper class for the post requests
+ */
 public class Poster {
 
+    /**
+     * A broadcaster for when the request will be unsuccessful
+     */
     private OnPostFailListener failBroadcaster;
 
+    /**
+     * The method to set the listener.
+     */
     public void setOnPostFailListener(OnPostFailListener failListener) {
         this.failBroadcaster = failListener;
     }
@@ -35,7 +45,7 @@ public class Poster {
          * The home id is required so the server knows the modified house (obviously) and
          * the password is used to identify the client.
          * Indeed, if there was no password, anybody could have send post request to the server
-         * and change the houses state as long as this person knows the right URL.         *
+         * and change the houses state as long as this person knows the right URL.
          */
         Map<String, String> params = new HashMap<>();
         params.put("status_code", String.valueOf(code));
@@ -44,13 +54,14 @@ public class Poster {
 
         /**
          * Add additional parameters if needed
+         * (like the "grass_size")
          */
         if (additionalArgs != null) {
             params.putAll(additionalArgs);
         }
 
         /**
-         * The actual request + its listener
+         * The actual request + its listeners
          */
         PostRequest request = new PostRequest(ServerUtils.STATUS, params, new Response.Listener<String>() {
             @Override
@@ -77,18 +88,29 @@ public class Poster {
 
                 try {
 
-                    // Let's make our response a json object
+                    /**
+                     * Let's make our response a json object
+                     */
                     JSONObject jsonObject = new JSONObject(response);
 
+                    /**
+                     * If the server accepts the requets
+                     */
                     if (JSONUtils.getSuccess(jsonObject)) {
 
                         Log.i("POST REQUEST TO SERVER", "Success");
 
-                    } else {
+                    }
+
+                    /**
+                     * If it doesn't accept the request
+                     */
+                    else {
 
                         Log.i("POST REQUEST TO SERVER", "Not Successful");
                         failBroadcaster.onPostFail();
                         Toast.makeText(context, JSONUtils.getError(jsonObject), Toast.LENGTH_LONG).show();
+
                     }
 
                 } catch (JSONException e) {
@@ -119,6 +141,9 @@ public class Poster {
             }
         });
 
+        /**
+         * Let's send it !
+         */
         application.requestQueue.add(request);
 
     }

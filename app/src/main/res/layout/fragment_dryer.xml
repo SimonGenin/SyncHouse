@@ -18,7 +18,7 @@
             android:padding="16dp"
             >
 
-            <android.support.v7.widget.SwitchCompat
+            <Switch
                 android:id="@+id/switch_program"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -48,7 +48,7 @@
             android:padding="16dp"
             >
 
-            <android.support.v7.widget.SwitchCompat
+            <Switch
                 android:id="@+id/switch_is_running"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

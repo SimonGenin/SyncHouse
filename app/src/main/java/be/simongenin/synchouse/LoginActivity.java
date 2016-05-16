@@ -3,6 +3,7 @@ package be.simongenin.synchouse;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,22 +33,28 @@ import be.simongenin.synchouse.requests.PostRequest;
 import be.simongenin.synchouse.utils.ServerUtils;
 
 /**
+ * @author Simon Genin
+ *
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity {
-
 
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
 
-    // UI references.
+    /**
+     * UI references
+     */
     private EditText mHomeIDView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
 
+    /**
+     * The app object
+     */
     private SyncHouseApplication application;
 
     @Override
@@ -55,11 +62,24 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
-
+        /**
+         * Get the app
+         */
         application = (SyncHouseApplication) getApplication();
 
+        /**
+         * Get the views
+         */
         mPasswordView = (EditText) findViewById(R.id.password);
+        mHomeIDView = (EditText) findViewById(R.id.email);
+        mLoginFormView = findViewById(R.id.login_form);
+        mProgressView = findViewById(R.id.login_progress);
+        Button signInButton = (Button) findViewById(R.id.sign_in_button);
+
+
+        /**
+         * On password change listener
+         */
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -71,7 +91,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button signInButton = (Button) findViewById(R.id.sign_in_button);
+        /**
+         * On sign in button clicked listener
+         */
         signInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,12 +101,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        mHomeIDView = (EditText) findViewById(R.id.email);
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+
     }
 
     /**
+     * @author Simon Genin and Google
+     *
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
@@ -138,19 +160,26 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(true);
             mAuthTask = new UserLoginTask(homeID, password);
             mAuthTask.execute((Void) null);
+
         }
     }
 
+    /**
+     * Validation for the home ID
+     */
     private boolean isHomeIDValid(String id) {
         return id.length() >= 4;
     }
 
+    /**
+     * Validation for the password
+     */
     private boolean isPasswordValid(String password) {
         return password.length() >= 4;
     }
 
     /**
-     * AUTHOR : GOOGLE
+     * @author : Google
      *
      * Shows the progress UI and hides the login form.
      */
@@ -300,12 +329,26 @@ public class LoginActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
+
+                /**
+                 * In case of success, we set some variables, persist its state, and send the
+                 * intent.
+                 */
                 application.isUserConnected = true;
                 application.homeID = homeID;
                 application.password = password;
                 application.persistState();
-                finish();
+
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
             } else {
+
+                /**
+                 * There was a wrong information provided, so we print the user so.
+                 */
 
                 if (isHomeIDRight) {
                     mPasswordView.setError("Le mot de passe est incorrect.");
@@ -322,10 +365,28 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled() {
+
+            /**
+             * We cancel the task.
+             */
+
             mAuthTask = null;
             showProgress(false);
         }
     }
 }
 
+/**
+ * {
+ *     ...
+ *     states : {
+ *        alarm : 1 / 2 / 3
+ *        windows : 1 / 2
+ *        shutters : 1 / 2
+ *        mower : 1 / 2 / 3
+ *        washingMachine : 1, 2, 3
+ *
+ *     }
+ * }
+ */
 

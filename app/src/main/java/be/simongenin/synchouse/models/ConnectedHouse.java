@@ -1,12 +1,19 @@
 package be.simongenin.synchouse.models;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+/**
+ * @author Simon Genin
+ *
+ * Represent a complete connected house, with all the required components
+ */
 public class ConnectedHouse {
 
+    /**
+     * All the components
+     */
     public Alarm alarm;
     public Mower mower;
     public Windows windows;
@@ -14,8 +21,14 @@ public class ConnectedHouse {
     public DomesticMachine dryer;
     public DomesticMachine dishWasher;
 
+    /**
+     * The file where to save
+     */
     private SharedPreferences prefs;
 
+    /**
+     * Create all the objects
+     */
     public ConnectedHouse (Context context) {
 
         alarm = new Alarm();
@@ -29,6 +42,9 @@ public class ConnectedHouse {
 
     }
 
+    /**
+     * Save all the objects into the preferences
+     */
     public void saveState() {
 
         alarm.saveState(prefs);
@@ -40,6 +56,9 @@ public class ConnectedHouse {
 
     }
 
+    /**
+     * Retrieve all the objects from the preferences.
+     */
     public void retrieveState() {
 
         alarm.retrieveState(prefs);

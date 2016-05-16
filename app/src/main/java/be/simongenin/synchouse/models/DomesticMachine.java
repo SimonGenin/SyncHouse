@@ -7,21 +7,32 @@ import be.simongenin.synchouse.listeners.OnStateChangeListener;
 
 public class DomesticMachine {
 
+    /**
+     * The different states a machine can be
+     */
     public enum Type { DRYER, WASHING_MACHINE, DISH_WASHER }
 
+    /**
+     * The states.
+     */
     protected boolean isWorking;
     protected boolean isProgrammed;
 
-    public boolean isWorking() {
-        return isWorking;
-    }
-
-    public boolean isProgrammed() {
-        return isProgrammed;
-    }
-
+    /**
+     * The broadcaster
+     */
     OnStateChangeListener stateBroadcaster;
 
+    /**
+     * Set the state listener
+     */
+    public void setOnStateChangeListener(OnStateChangeListener stateListener) {
+        stateBroadcaster = stateListener;
+    }
+
+    /**
+     * Start a machine
+     */
     public void start() {
 
         isWorking = true;
@@ -32,6 +43,9 @@ public class DomesticMachine {
 
     }
 
+    /**
+     * Stop the machine
+     */
     public void stop() {
 
         isWorking = false;
@@ -42,14 +56,35 @@ public class DomesticMachine {
 
     }
 
+    /**
+     * Toggle between programmed/not programmed
+     */
     public void setProgrammed(boolean programmed) {
         isProgrammed = programmed;
+
+        if (stateBroadcaster != null) {
+            stateBroadcaster.onStateChange();
+        }
+
     }
 
-    public void setOnStateChangeListener(OnStateChangeListener stateListener) {
-        stateBroadcaster = stateListener;
+    /**
+     * Getter for the working state
+     */
+    public boolean isWorking() {
+        return isWorking;
     }
 
+    /**
+     * Getter for the "is programmed" state
+     */
+    public boolean isProgrammed() {
+        return isProgrammed;
+    }
+
+    /**
+     * Save the state of the object in the shared preferences
+     */
     public void saveState(Type type, SharedPreferences preferences) {
 
         switch (type) {
@@ -70,6 +105,9 @@ public class DomesticMachine {
 
     }
 
+    /**
+     * Retrieve the state of the object in the shared preferences
+     */
     public void retrieveState(Type type, SharedPreferences preferences) {
 
         switch (type) {

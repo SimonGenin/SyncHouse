@@ -1,20 +1,5 @@
 package be.simongenin.synchouse.gcm;
 
-/**
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,11 +11,12 @@ import be.simongenin.synchouse.MainActivity;
 import be.simongenin.synchouse.SyncHouseApplication;
 import be.simongenin.synchouse.utils.NotificationHandler;
 
-
+/**
+ * @author Simon Genin and Google
+ */
 public class SyncHouseGcmListenerService extends GcmListenerService {
 
     private static final String TAG = "SHGcmListenerService";
-
 
     /**
      * Called when message is received.
@@ -42,8 +28,14 @@ public class SyncHouseGcmListenerService extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data) {
 
+        /**
+         * Get the app object
+         */
         SyncHouseApplication application = (SyncHouseApplication) getApplication();
 
+        /**
+         * Get back the 3 critical data from the response data
+         */
         int statusCode = Integer.parseInt(data.getString("status_code"));
         String homeId = data.getString("home_id");
         String message = data.getString("message");
@@ -57,8 +49,11 @@ public class SyncHouseGcmListenerService extends GcmListenerService {
 
         /**
          * We need to do something depending on the status code.
+         * We send the relevant data to the activity, because we can't
+         * do it in a background thread. Why ? Because at the end of the processing,
+         * the UI in the fragments will be updated. Or, if we are still on this
+         * background thread, our application will crash.
          */
-
         Intent intent = new Intent("status_code");
         intent.putExtra("status_code", statusCode);
         intent.putExtra("args", data);

@@ -42,12 +42,23 @@
 
     <item android:title="Options">
         <menu>
+
+            <item
+                android:id="@+id/nav_menu"
+                android:title="Accueil"
+                android:icon="@drawable/ic_menu_menu"
+                />
+
             <item
                 android:id="@+id/nav_add_module"
                 android:icon="@drawable/ic_menu_add"
                 android:title="Ajouter un module" />
 
+
+
         </menu>
+
+
     </item>
 
 </menu>

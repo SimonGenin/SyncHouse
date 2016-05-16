@@ -167,7 +167,7 @@ public class MowerFragment extends Fragment implements OnStateChangeListener, On
     }
 
     /**
-     * Update the UI to match the current state of the alarm.
+     * Update the UI to match the current state of the mower.
      */
     private void updateLayout() {
 

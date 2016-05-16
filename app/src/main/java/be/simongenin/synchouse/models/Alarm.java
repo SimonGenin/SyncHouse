@@ -4,35 +4,47 @@ import android.content.SharedPreferences;
 
 import be.simongenin.synchouse.listeners.OnStateChangeListener;
 
+/**
+ * @author Simon Genin
+ *
+ * This class is the model for an alarm.
+ */
 public class Alarm {
 
+    /**
+     * The different states for the alarm.
+     */
     public enum state { PARTIAL, TOTAL, NONE }
 
+    /**
+     * The states.
+     */
     private state currentState;
     private boolean isSirenActive;
 
+    /**
+     * The broadcaster
+     */
     private OnStateChangeListener stateBroadcaster;
-//    private OnPostFailListener failBroadcaster;
 
-    public Alarm() {
-
+    /**
+     * Controller
+     */
+     public Alarm() {
         currentState = state.NONE;
         isSirenActive = false;
-
     }
 
+    /**
+     * Set the state listener
+     */
     public void setOnStateChangeListener(OnStateChangeListener stateListener) {
         stateBroadcaster = stateListener;
     }
 
-//    public void setOnPostFailListener(OnPostFailListener failListener) {
-//        failBroadcaster = failListener;
-//    }
-
-    public state getCurrentState() {
-        return currentState;
-    }
-
+    /**
+     * Turn on the siren
+     */
     public void activeSiren() {
         isSirenActive = true;
 
@@ -41,6 +53,9 @@ public class Alarm {
         }
     }
 
+    /**
+     * Turn off the siren
+     */
     public void turnOffAlarmSound() {
         isSirenActive = false;
 
@@ -50,6 +65,9 @@ public class Alarm {
 
     }
 
+    /**
+     * Change the state of the alarm
+     */
     public void setState(state s) {
         currentState = s;
 
@@ -59,12 +77,23 @@ public class Alarm {
 
     }
 
+    /**
+     * Getter of the siren
+     */
     public boolean isSirenActive() {
         return isSirenActive;
     }
 
+    /**
+     * Getter of the state
+     */
+    public state getCurrentState() {
+        return currentState;
+    }
 
-
+    /**
+     * Save the state of the object in the shared preferences
+     */
     public void saveState(SharedPreferences preferences) {
 
         int state = 1;
@@ -81,11 +110,14 @@ public class Alarm {
                 break;
         }
 
-        preferences.edit().putBoolean("is_alarm_active", isSirenActive).commit();
-        preferences.edit().putInt("current_state", state).commit();
+        preferences.edit().putBoolean("is_alarm_active", isSirenActive).apply();
+        preferences.edit().putInt("current_state", state).apply();
 
     }
 
+    /**
+     * Retrieve the state of the object in the shared preferences
+     */
     public void retrieveState(SharedPreferences preferences) {
 
         isSirenActive = preferences.getBoolean("is_alarm_active", false);

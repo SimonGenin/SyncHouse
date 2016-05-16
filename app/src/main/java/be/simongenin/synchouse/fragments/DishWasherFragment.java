@@ -51,7 +51,7 @@ public class DishWasherFragment extends Fragment implements OnStateChangeListene
         application = (SyncHouseApplication) getActivity().getApplication();
 
         /**
-         * Retrieve the alarm
+         * Retrieve the dish washer
          */
         dishWasher = application.house.dishWasher;
         dishWasher.setOnStateChangeListener(this);
@@ -134,7 +134,7 @@ public class DishWasherFragment extends Fragment implements OnStateChangeListene
     };
 
     /**
-     * Update the UI to match the current state of the alarm.
+     * Update the UI to match the current state of the dish washer.
      */
     private void updateLayout() {
 

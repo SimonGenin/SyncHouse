@@ -8,6 +8,14 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * @author Simon Genin
+ *
+ * This code in basically copy/paste from code overflow.
+ * It makes Volley a little faster by using a composent from
+ * the library "OKHTTP" for the stack used by the library volley
+ * that we are using.
+ */
 public class OkHttpStack extends HurlStack {
     private final OkUrlFactory okUrlFactory;
     public OkHttpStack() {

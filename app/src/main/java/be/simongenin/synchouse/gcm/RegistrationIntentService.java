@@ -1,27 +1,9 @@
 package be.simongenin.synchouse.gcm;
 
-/**
- * Copyright 2015 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.android.volley.Response;
@@ -37,6 +19,10 @@ import be.simongenin.synchouse.SyncHouseApplication;
 import be.simongenin.synchouse.requests.PostRequest;
 import be.simongenin.synchouse.utils.ServerUtils;
 
+/**
+ * @author Simon Genin and Google
+ *
+ */
 public class RegistrationIntentService extends IntentService {
 
     private static final String TAG = "RegIntentService";
@@ -59,19 +45,14 @@ public class RegistrationIntentService extends IntentService {
             Log.i(TAG, "GCM Registration Token: " + token);
 
             /**
-             * Hand to token to the server
+             * Hand the token to the server
              */
             sendRegistrationToServer(token);
 
             /**
-             * On le met dans notre objet application afin de l'avoir globalement
+             * We keep the token in the app object for later use
              */
             ((SyncHouseApplication)getApplication()).currentToken = token;
-
-
-            // TODO remove if not needed
-            // Subscribe to topic channels
-            // subscribeTopics(token);
 
             /**
              * Keep a trace in the prefs that we sent the token to the server
@@ -87,13 +68,6 @@ public class RegistrationIntentService extends IntentService {
              */
             sharedPreferences.edit().putBoolean(GCMPreferences.SENT_TOKEN_TO_SERVER, false).apply();
         }
-
-        /**
-         * Notify the UI that we have finished the registration.
-         * So we can't stop the progress bar.
-         */
-        Intent registrationComplete = new Intent(GCMPreferences.REGISTRATION_COMPLETE);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
 
 }
 

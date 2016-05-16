@@ -4,24 +4,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by Simon on 13/05/16.
+ * @author Simon Genin
+ *
+ * Some utility classes to work with our JSON.
  */
 public class JSONUtils {
 
-    public static int getStatusCode(JSONObject json) {
-
-        int result = -1;
-
-        try {
-            result = json.getInt("status_code");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-
-    }
-
+    /**
+     * Get the "success" param from a json object
+     */
     public static boolean getSuccess(JSONObject json) {
 
         boolean result = false;
@@ -36,34 +27,9 @@ public class JSONUtils {
 
     }
 
-    public static String getMessage(JSONObject json) {
-
-        String result = "";
-
-        try {
-            result = json.getString("message");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-
-    }
-
-    public static String getHomeID(JSONObject json) {
-
-        String result = "";
-
-        try {
-            result = json.getString("home_id");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-
-    }
-
+    /**
+     * Get the "error_message" param from a json object
+     */
     public static String getError(JSONObject json) {
 
         String result = "";

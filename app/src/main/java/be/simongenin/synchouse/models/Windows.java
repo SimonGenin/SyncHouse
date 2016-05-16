@@ -4,22 +4,47 @@ import android.content.SharedPreferences;
 
 import be.simongenin.synchouse.listeners.OnStateChangeListener;
 
+/**
+ * @author Simon Genin
+ *
+ * This class is the model for a windows.
+ */
 public class Windows{
 
+    /**
+     * The possible states for the windows/shutters
+     */
     public enum state { OPEN, CLOSED }
 
+    /**
+     * The states.
+     */
     private state windowState;
     private state shutterState;
 
+    /**
+     * The broadcaster
+     */
     OnStateChangeListener stateBroadcaster;
 
+    /**
+     * Controller
+     */
     public Windows() {
-
         windowState = state.CLOSED;
         shutterState = state.CLOSED;
-
     }
 
+    /**
+     * Set the state listener
+     */
+    public void setOnStateChangeListener(OnStateChangeListener stateListener) {
+        stateBroadcaster = stateListener;
+    }
+
+    /**
+     * Set the windows state
+     */
     public void setWindowState(state s) {
         windowState = s;
 
@@ -28,6 +53,9 @@ public class Windows{
         }
     }
 
+    /**
+     * Set the shutter state
+     */
     public void setShutterState(state s) {
         shutterState = s;
         if (stateBroadcaster != null) {
@@ -35,10 +63,23 @@ public class Windows{
         }
     }
 
-    public void setOnStateChangeListener(OnStateChangeListener stateListener) {
-        stateBroadcaster = stateListener;
+    /**
+     * Getter for the window state
+     */
+    public state getWindowState() {
+        return windowState;
     }
 
+    /**
+     * Getter for shutter state
+     */
+    public state getShutterState() {
+        return shutterState;
+    }
+
+    /**
+     * Save the state of the object in the shared preferences
+     */
     public void saveState(SharedPreferences preferences) {
 
         int windowsState = 1;
@@ -69,14 +110,9 @@ public class Windows{
 
     }
 
-    public state getWindowState() {
-        return windowState;
-    }
-
-    public state getShutterState() {
-        return shutterState;
-    }
-
+    /**
+     * Retrieve the state of the object in the shared preferences
+     */
     public void retrieveState(SharedPreferences preferences) {
 
         int windowsState = preferences.getInt("window_state", 1);

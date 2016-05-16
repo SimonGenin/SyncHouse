@@ -5,9 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
@@ -19,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.google.android.gms.common.ConnectionResult;
@@ -27,10 +26,10 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import be.simongenin.synchouse.fragments.AlarmFragment;
 import be.simongenin.synchouse.fragments.DishWasherFragment;
 import be.simongenin.synchouse.fragments.DryerFragment;
+import be.simongenin.synchouse.fragments.MenuFragment;
 import be.simongenin.synchouse.fragments.MowerFragment;
 import be.simongenin.synchouse.fragments.WashingMachineFragment;
 import be.simongenin.synchouse.fragments.WindowsFragment;
-import be.simongenin.synchouse.gcm.GCMPreferences;
 import be.simongenin.synchouse.gcm.RegistrationIntentService;
 import be.simongenin.synchouse.models.Alarm;
 import be.simongenin.synchouse.models.ConnectedHouse;
@@ -43,11 +42,13 @@ import static be.simongenin.synchouse.requests.StatusCodes.ALARM_RING_START;
 import static be.simongenin.synchouse.requests.StatusCodes.ALARM_RING_STOP;
 import static be.simongenin.synchouse.requests.StatusCodes.ALARM_STOP;
 import static be.simongenin.synchouse.requests.StatusCodes.ALARM_TOTAL_START;
+import static be.simongenin.synchouse.requests.StatusCodes.DISH_WASHER_CANCEL_PROGRAM;
 import static be.simongenin.synchouse.requests.StatusCodes.DISH_WASHER_ELECTRICAL_PROBLEM;
 import static be.simongenin.synchouse.requests.StatusCodes.DISH_WASHER_PROGRAM;
 import static be.simongenin.synchouse.requests.StatusCodes.DISH_WASHER_START;
 import static be.simongenin.synchouse.requests.StatusCodes.DISH_WASHER_STOP;
 import static be.simongenin.synchouse.requests.StatusCodes.DISH_WASHER_WATER_PROBLEM;
+import static be.simongenin.synchouse.requests.StatusCodes.DRYER_CANCEL_PROGRAM;
 import static be.simongenin.synchouse.requests.StatusCodes.DRYER_ELECTRICAL_PROBLEM;
 import static be.simongenin.synchouse.requests.StatusCodes.DRYER_PROGRAM;
 import static be.simongenin.synchouse.requests.StatusCodes.DRYER_START;
@@ -58,6 +59,7 @@ import static be.simongenin.synchouse.requests.StatusCodes.MOWER_START;
 import static be.simongenin.synchouse.requests.StatusCodes.MOWER_STOP;
 import static be.simongenin.synchouse.requests.StatusCodes.SHUTTERS_CLOSE;
 import static be.simongenin.synchouse.requests.StatusCodes.SHUTTERS_OPEN;
+import static be.simongenin.synchouse.requests.StatusCodes.WASHING_MACHINE_CANCEL_PROGRAM;
 import static be.simongenin.synchouse.requests.StatusCodes.WASHING_MACHINE_ELECTRICAL_PROBLEM;
 import static be.simongenin.synchouse.requests.StatusCodes.WASHING_MACHINE_PROGRAM;
 import static be.simongenin.synchouse.requests.StatusCodes.WASHING_MACHINE_START;
@@ -80,7 +82,7 @@ public class MainActivity extends AppCompatActivity
     // TAG
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    // TODO move into prefs
+    // Google play services
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     // Application instance
@@ -90,7 +92,6 @@ public class MainActivity extends AppCompatActivity
     private RequestQueue requestQueue;
 
     // The broadcast receiver
-    private BroadcastReceiver registrationBroadcastReceiver;
     private BroadcastReceiver statusCodeBroadcastReceiver;
 
     // The drawer
@@ -123,20 +124,11 @@ public class MainActivity extends AppCompatActivity
          */
         requestQueue = application.requestQueue;
 
+
         /**
-         * Prepare the broadcast receiver
+         * This handles the status. It is sent from the GSMListenerService.
+         * We need this cause it has to be done on the main thread.
          */
-        registrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-
-                /**
-                 * TODO remove if useless
-                 */
-
-            }
-        };
-
         statusCodeBroadcastReceiver = new BroadcastReceiver() {
 
             @Override
@@ -144,9 +136,15 @@ public class MainActivity extends AppCompatActivity
 
                 Log.i(TAG, "Status code broadcast received : " + intent.toString());
 
+                /**
+                 * Retrieve the data
+                 */
                 int statusCode = intent.getIntExtra("status_code", 0);
                 Bundle args = intent.getBundleExtra("args");
 
+                /**
+                 * Dispatch !
+                 */
                 applyStatusCode(statusCode, args);
 
             }
@@ -179,17 +177,26 @@ public class MainActivity extends AppCompatActivity
             startService(intent);
         }
 
+        /**
+         * Set the menu fragment
+         */
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.fragment_content, MenuFragment.newInstance()).commit();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         /**
          * If the app just got resumed, let's register again the receiver
          */
         application.retrieveState();
-        LocalBroadcastManager.getInstance(this).registerReceiver(registrationBroadcastReceiver,
-                new IntentFilter(GCMPreferences.REGISTRATION_COMPLETE));
+
+        /**
+         * Let's register our broadcast manager
+         */
         LocalBroadcastManager.getInstance(this).registerReceiver(statusCodeBroadcastReceiver,
                 new IntentFilter("status_code"));
     }
@@ -201,7 +208,10 @@ public class MainActivity extends AppCompatActivity
          * If the app is in the pause state, let's unregister the receiver.
          */
         application.persistState();
-         LocalBroadcastManager.getInstance(this).unregisterReceiver(registrationBroadcastReceiver);
+
+         /**
+          * Let's unregister our broadcast manager
+          */
          LocalBroadcastManager.getInstance(this).unregisterReceiver(statusCodeBroadcastReceiver);
         super.onPause();
     }
@@ -258,6 +268,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         switch (id) {
+
+            case R.id.nav_menu:
+                fragment = MenuFragment.newInstance();
+                break;
+
             case R.id.nav_alarm:
                 fragment = AlarmFragment.newInstance();
                 break;
@@ -290,10 +305,7 @@ public class MainActivity extends AppCompatActivity
                  * We just inform the user with a snackbar.
                  */
 
-                // TODO remove this fab thing if it is no longer used
-
-                FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-                Snackbar.make(fab, "Cette opération n'a pas été implémentée", Snackbar.LENGTH_SHORT).show();
+                Toast.makeText(this, "Cette opération n'a pas été implémentée", Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -440,7 +452,11 @@ public class MainActivity extends AppCompatActivity
              * Dryer
              */
             case DRYER_PROGRAM:
-                dryer.start();
+                dryer.setProgrammed(true);
+                break;
+
+            case DRYER_CANCEL_PROGRAM:
+                dryer.setProgrammed(false);
                 break;
 
             case DRYER_START:
@@ -464,7 +480,11 @@ public class MainActivity extends AppCompatActivity
              */
 
             case WASHING_MACHINE_PROGRAM:
-                washingMachine.start();
+                washingMachine.setProgrammed(true);
+                break;
+
+            case WASHING_MACHINE_CANCEL_PROGRAM:
+                washingMachine.setProgrammed(false);
                 break;
 
             case WASHING_MACHINE_START:
@@ -488,7 +508,11 @@ public class MainActivity extends AppCompatActivity
              */
 
             case DISH_WASHER_PROGRAM:
-                dishWasher.start();
+                dishWasher.setProgrammed(true);
+                break;
+
+            case DISH_WASHER_CANCEL_PROGRAM:
+                dishWasher.setProgrammed(false);
                 break;
 
             case DISH_WASHER_START:
